@@ -2,11 +2,11 @@ import os
 
 
 def find_files():
-    '''
+    """
     Generates list of CSV files in current working directory.
 
     :return: (files_found: bool; files_list: list)
-    '''
+    """
 
     try:
         home_dir = os.listdir()
@@ -20,20 +20,20 @@ def find_files():
 
 
 def read_list_path(path):
-    '''
+    """
     Reads CSV file located at path param and returns all video files contained within
 
     :param path: str
-    :return: (current_path: str, current_video_files: list(str)
-    '''
+    :return: current_video_files: list[str]
+    """
+
     try:
         file = open(path)
     except Exception as e:
         print('Could not read file')
         print(f'Error: {e}')
     else:
-        current_path = f'/{file}'
         video_string = file.read()
         current_video_files = video_string.split(',')
         file.close()
-        return current_path, current_video_files
+        return current_video_files
