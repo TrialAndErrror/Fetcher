@@ -9,14 +9,14 @@ def dev_show_streams(current_video_object):
             print(stream)
 
 
-def download_video(target_video):
+def download_video(target_video, target_path):
     try:
         stream = target_video.streams.get_by_itag(22)
     except Exception as e:
         print(f'Error getting the default stream.\n\nError code {e}')
     else:
         print('Downloading video...')
-        stream.download()
+        stream.download(target_path)
         print('Done')
 
 

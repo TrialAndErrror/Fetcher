@@ -1,4 +1,4 @@
-from Classes import Fetcher
+from src.Classes import Fetcher
 
 
 def fetch():
