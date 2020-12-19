@@ -19,7 +19,7 @@ def download_video(target_video, target_path):
     """
     Takes in the link to the target video and where to download it to.
     Downloads video based on ITag value of 22 (720p stream).
-    :param target_video: str
+    :param target_video: pytube.Youtube()
     :param target_path: str
     :return: None
     """
@@ -28,9 +28,9 @@ def download_video(target_video, target_path):
     except Exception as e:
         print(f'Error getting the default stream.\n\nError code {e}')
     else:
-        print('Downloading video...')
+        print(f'Downloading video to {target_path}...')
         stream.download(target_path)
-        print('Done')
+        print(f'Done downloading to {target_path}.')
 
 
 def create_video_object(url):
@@ -47,7 +47,7 @@ def create_video_object(url):
     except Exception as e:
         print(f'Could not create youtube video object. \n\nError {e}')
     else:
-        print('Video Object Created...')
+        print(f'Video Object Created for {url}...')
         if DEBUG:
             dev_show_streams(video_object)
         return video_object
