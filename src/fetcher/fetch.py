@@ -38,7 +38,7 @@ def read_spreadsheet(file):
     """
     output_dir_name = file[:-4]
     all_cells = read_list_path(file)
-    current_video_files = [item for item in all_cells if len(item) > 25]
+    current_video_files = [item for item in all_cells if item.startswith('https://www.youtube.com/watch')]
     return output_dir_name, current_video_files
 
 
