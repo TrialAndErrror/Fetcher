@@ -28,12 +28,10 @@ def read_list_path(path):
     """
 
     try:
-        file = open(path)
+        with open(path) as file:
+            current_video_files = file.read().split(',')
     except Exception as e:
         print('Could not read file')
         print(f'Error: {e}')
     else:
-        video_string = file.read()
-        current_video_files = video_string.split(',')
-        file.close()
         return current_video_files
