@@ -1,4 +1,5 @@
 import concurrent.futures
+import logging
 
 from .video_actions import download_video, create_video_object
 from .file_actions import find_files, read_list_path
@@ -12,9 +13,9 @@ def fetch():
     files_found, files_list = find_files()
     if files_found:
         download_all_videos(files_list)
-        print('Finished downloading all videos')
+        logging.info('Finished downloading all videos')
     else:
-        print('No files found; please place CSV files in this directory')
+        logging.warning('No files found; please place CSV files in this directory')
 
 
 def download_all_videos(files_list):
@@ -65,7 +66,7 @@ def thread_print_when_done(threads_list):
     :return: None
     """
     for thread in concurrent.futures.as_completed(threads_list):
-        print(thread.result())
+        logging.debug(thread.result())
 
 
 def make_and_append_thread(executor, output_dir, threads_list, video):
@@ -81,7 +82,7 @@ def make_and_append_thread(executor, output_dir, threads_list, video):
     try:
         thread = executor.submit(download_file, video, output_dir)
     except Exception as e:
-        print(f'Error making thread for {video};\n\n error code {e}')
+        logging.warning(f'Error making thread for {video};\n\n error code {e}')
     else:
         threads_list.append(thread)
 
@@ -95,11 +96,11 @@ def download_file(item, output_dir_name):
     :return: None
     """
     try:
-        print(f'Working on {item}')
+        logging.info(f'Working on {item}')
         current_video = create_video_object(item)
         download_video(current_video, output_dir_name)
         return f'Done working on {item}'
     except Exception as e:
-        print(f'Error downloading {item};\n\nerror {e}')
+        logging.warning(f'Error downloading {item};\n\nerror {e}')
 
 

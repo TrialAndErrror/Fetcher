@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 def find_files():
@@ -11,8 +12,8 @@ def find_files():
     try:
         home_dir = os.listdir()
     except Exception as e:
-        print('Error reading files in home directory')
-        print(f'Error was {e}')
+        logging.warning('Error reading files in home directory')
+        logging.warning(f'Error was {e}')
     else:
         files_list = [file for file in home_dir if file[-4:] == '.csv']
         files_found = bool(len(files_list) > 0)
@@ -31,7 +32,7 @@ def read_list_path(path):
         with open(path) as file:
             current_video_files = file.read().split(',')
     except Exception as e:
-        print('Could not read file')
-        print(f'Error: {e}')
+        logging.warning('Could not read file')
+        logging.warning(f'Error: {e}')
     else:
         return current_video_files
