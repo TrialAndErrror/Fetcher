@@ -16,7 +16,7 @@ def fetch_with_timer():
 
 def print_missing_sheets_or_videos(num_sheets, num_videos):
     if num_sheets > 0 and num_videos > 0:
-        print(f'Success! {num_sheets} sheets processed, downloading {num_videos} videos.')
+        print(f'\n\nSuccess! {num_sheets} sheets processed, downloading {num_videos} videos.')
     else:
         print(f'Uh-oh, something went wrong!')
         if num_sheets == 0:
