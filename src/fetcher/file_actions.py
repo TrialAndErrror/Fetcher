@@ -29,10 +29,30 @@ def read_list_path(path):
     """
 
     try:
-        with open(path) as file:
-            current_video_files = file.read().split(',')
+        current_video_files = find_youtube_links(path)
     except Exception as e:
         logging.warning('Could not read file')
         logging.warning(f'Error: {e}')
     else:
+        log_empty_video_list(current_video_files)
         return current_video_files
+
+
+def find_youtube_links(path):
+    youtube_prefix = 'https://www.youtube.com/watch'
+    with open(path) as file:
+        current_video_files = get_video_links_from_sheet(file, youtube_prefix)
+    return current_video_files
+
+
+def log_empty_video_list(current_video_files):
+    is_files_found = bool(len(current_video_files) > 0)
+    if not is_files_found:
+        logging.warning('No video links found')
+
+
+def get_video_links_from_sheet(file, youtube_prefix):
+    item_list = file.read().split(',')
+    entry_list = [item.replace('\n', '') for item in item_list]
+    current_video_files = [item for item in entry_list if item.startswith(youtube_prefix)]
+    return current_video_files

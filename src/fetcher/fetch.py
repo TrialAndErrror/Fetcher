@@ -12,6 +12,8 @@ def fetch():
     """
     files_found, files_list = find_files()
     if files_found:
+        print(f'Files list: {files_list}')
+        logging.info(files_list)
         download_all_videos(files_list)
         logging.info('Finished downloading all videos')
     else:
@@ -26,6 +28,7 @@ def download_all_videos(files_list):
     """
     file: str
     for file in files_list:
+        print(f'Working on {file}')
         output_dir_name, current_video_files = read_spreadsheet(file)
         get_all_videos(current_video_files, output_dir_name)
 
@@ -96,9 +99,11 @@ def download_file(item, output_dir_name):
     :return: None
     """
     try:
+        print(f'Starting downloading {item}')
         logging.info(f'Working on {item}')
         current_video = create_video_object(item)
         download_video(current_video, output_dir_name)
+        print(f'Completed {item}')
         return f'Done working on {item}'
     except Exception as e:
         logging.warning(f'Error downloading {item};\n\nerror {e}')
