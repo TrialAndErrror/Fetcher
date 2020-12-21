@@ -11,13 +11,16 @@ def fetch():
     :return: None
     """
     files_found, files_list = find_files()
+    num_sheets = 0
+    num_videos = 0
     if files_found:
         print(f'Files list: {files_list}')
         logging.info(files_list)
-        download_all_videos(files_list)
+        num_sheets, num_videos = download_all_videos(files_list)
         logging.info('Finished downloading all videos')
     else:
         logging.warning('No files found; please place CSV files in this directory')
+    return num_sheets, num_videos
 
 
 def download_all_videos(files_list):
@@ -26,11 +29,15 @@ def download_all_videos(files_list):
     :param files_list: list(str)
     :return: None
     """
+    count_sheets = len(files_list)
+    count_videos = 0
     file: str
     for file in files_list:
         print(f'Working on {file}')
         output_dir_name, current_video_files = read_spreadsheet(file)
+        count_videos += len(current_video_files)
         get_all_videos(current_video_files, output_dir_name)
+    return count_sheets, count_videos
 
 
 def read_spreadsheet(file):
