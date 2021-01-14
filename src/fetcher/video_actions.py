@@ -16,7 +16,7 @@ def dev_show_streams(current_video_object):
             print(stream)
 
 
-def download_video(target_video, target_path):
+def download_video(target_video: pytube.YouTube, target_path: str):
     """
     Takes in the link to the target video and where to download it to.
     Downloads video based on ITag value of 22 (720p stream). Can change itag value to change resolution.
