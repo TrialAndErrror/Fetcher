@@ -1,19 +1,19 @@
 import pytube
+import logging
 
-# Set this to True to show all streams available for your video
-DEBUG = False
-
+# This hard-coded default itag represents 720p videostreams. You ca
+DEFAULT_ITAG = 22
 
 def dev_show_streams(current_video_object):
     """
-    FOR DEV MODE ONLY!
-    Shows all available streams in the console.
+    Log all available video streams to the console. This enables the user to inspect logs to choose a different itag.
+
     :param current_video_object: pytube.YouTube()
     :return: None
     """
     for stream in current_video_object.streams:
         if "video" in str(stream) and "mp4" in str(stream):
-            print(stream)
+            logging.debug(stream)
 
 
 def download_video(target_video, target_path):
@@ -26,14 +26,14 @@ def download_video(target_video, target_path):
     :return: None
     """
     try:
-        itag = 22
+        itag = DEFAULT_ITAG
         stream = target_video.streams.get_by_itag(itag)
     except Exception as e:
-        print(f'Error getting the default stream.\n\nError code {e}')
+        logging.warning(f'Error getting the default stream.\n\nError code {e}')
     else:
-        print(f'Downloading video to {target_path}...')
+        logging.info(f'Downloading video to {target_path}...')
         stream.download(target_path)
-        print(f'Done downloading to {target_path}.')
+        logging.info(f'Done downloading to {target_path}.')
 
 
 def create_video_object(url):
@@ -48,9 +48,8 @@ def create_video_object(url):
     try:
         video_object = pytube.YouTube(url)
     except Exception as e:
-        print(f'Could not create youtube video object. \n\nError {e}')
+        logging.warning(f'Could not create youtube video object. \n\nError {e}')
     else:
-        print(f'Video Object Created for {url}...')
-        if DEBUG:
-            dev_show_streams(video_object)
+        logging.info(f'Video Object Created for {url}...')
+        dev_show_streams(video_object)
         return video_object
