@@ -3,6 +3,8 @@ import logging
 
 # This hard-coded default itag represents 720p videostreams. You ca
 DEFAULT_ITAG = 22
+AUDIO_ITAG = 251
+
 
 def dev_show_streams(current_video_object):
     """
@@ -14,20 +16,28 @@ def dev_show_streams(current_video_object):
     for stream in current_video_object.streams:
         if "video" in str(stream) and "mp4" in str(stream):
             logging.debug(stream)
+        if "audio" in str(stream):
+            logging.debug(stream)
 
 
-def download_video(target_video: pytube.YouTube, target_path: str):
+def download_video(target_video: pytube.YouTube, target_path: str, audio_only: bool):
     """
     Takes in the link to the target video and where to download it to.
     Downloads video based on ITag value of 22 (720p stream). Can change itag value to change resolution.
+    If audio_only, downloads highest quality audio stream
 
     :param target_video: pytube.Youtube()
     :param target_path: str
+    :param audio_only: bool
     :return: None
     """
     try:
-        itag = DEFAULT_ITAG
+        itag = DEFAULT_ITAG if not audio_only else AUDIO_ITAG
         stream = target_video.streams.get_by_itag(itag)
+        while not stream:
+            itag -= 1
+            stream = target_video.streams.get_by_itag(itag)
+
     except Exception as e:
         logging.warning(f'Error getting the default stream.\n\nError code {e}')
     else:

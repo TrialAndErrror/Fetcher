@@ -1,6 +1,8 @@
 import os
 import logging
 
+YT_PREFIX = 'https://www.youtube.com/watch'
+
 
 def find_files():
     """
@@ -44,10 +46,9 @@ def find_youtube_links(path):
     :param path: str
     :return: current_video_files: list
     """
-    youtube_prefix = 'https://www.youtube.com/watch'
     try:
         with open(path) as file:
-            current_video_files = get_video_links_from_sheet(file, youtube_prefix)
+            current_video_files = get_video_links_from_sheet(file, YT_PREFIX)
     except Exception as e:
         logging.warning(f'Error opening {path} as file; error {e}')
     else:
@@ -86,12 +87,10 @@ def get_link_entry_list(file):
     :return: entry_list: list
     """
     try:
-        file_contents = file.read()
-        line_list = file_contents.split('\n')
-        item_list = []
-        for line in line_list:
-            item_list += line.split(',')
+        item_list = file.read().replace('\n', ',').split(',')
+        item_list = [item.strip(' " " ') for item in item_list]
     except Exception as e:
         logging.warning(f'Error reading file; error {e}')
     else:
-        return item_list
+        entry_list = [entry for entry in item_list if len(entry) > len(YT_PREFIX)]
+        return entry_list

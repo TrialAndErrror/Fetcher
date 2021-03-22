@@ -10,7 +10,7 @@ def timer(func):
     :return: wrapper: function
     """
     def wrapper():
-        start_logging()
+        start_logging(True)
         start = time.perf_counter()
         logging.info(f'Performance timer started at {datetime.datetime.now()}\n')
         func()
@@ -25,11 +25,13 @@ def timer(func):
     return wrapper
 
 
-def start_logging():
+def start_logging(debug_mode=False):
     log_format = '%(asctime)s:%(levelname)s:%(message)s'
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=log_format)
-    logging.basicConfig(filename='warnings.log', level=logging.WARNING, format=log_format)
-    logging.basicConfig(filename='info.log', level=logging.INFO, format=log_format)
+    # logging.basicConfig(filename='info.log', level=logging.INFO, format=log_format)
+    if debug_mode:
+        logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=log_format)
+    else:
+        logging.basicConfig(filename='logs.log', level=logging.INFO, format=log_format)
 
 
 def report_success_or_failure(num_sheets, num_videos):

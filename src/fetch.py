@@ -31,11 +31,16 @@ def download_all_videos(files_list):
     count_sheets = len(files_list)
     count_videos = 0
     file: str
+    audio = False
     for file in files_list:
-        print(f'\nWorking on {file}')
+        if file.startswith('[AUDIO]'):
+            print(f'Working on Audio Spreadsheet {file[7:]}')
+            audio = True
+        else:
+            print(f'\nWorking on {file}')
         output_dir_name, current_video_files = read_spreadsheet(file)
         count_videos += len(current_video_files)
-        get_all_videos(current_video_files, output_dir_name)
+        get_all_videos(current_video_files, output_dir_name, audio)
     return count_sheets, count_videos
 
 
@@ -52,7 +57,7 @@ def read_spreadsheet(file):
     return output_dir_name, current_video_files
 
 
-def get_all_videos(video_list, output_dir):
+def get_all_videos(video_list, output_dir, audio_only):
     """
     Create up to 5 threads at a time to get all videos. Max_workers can be modified or removed.
     :param video_list: list
@@ -63,7 +68,7 @@ def get_all_videos(video_list, output_dir):
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         threads_list = []
         for video in video_list:
-            make_and_append_thread(executor, output_dir, threads_list, video)
+            make_and_append_thread(executor, output_dir, threads_list, video, audio_only)
         thread_print_when_done(threads_list)
 
 
@@ -78,7 +83,7 @@ def thread_print_when_done(threads_list):
         logging.debug(thread.result())
 
 
-def make_and_append_thread(executor, output_dir, threads_list, video):
+def make_and_append_thread(executor, output_dir, threads_list, video, audio_only):
     """
     Make thread, and add to list if successful
 
@@ -89,7 +94,7 @@ def make_and_append_thread(executor, output_dir, threads_list, video):
     :return:
     """
     try:
-        thread = executor.submit(download_file, video, output_dir)
+        thread = executor.submit(download_file, video, output_dir, audio_only)
     except Exception as e:
         logging.warning(f'Error making thread for {video};\n\n error code {e}')
     else:
@@ -97,19 +102,20 @@ def make_and_append_thread(executor, output_dir, threads_list, video):
         time.sleep(.3)
 
 
-def download_file(item, output_dir_name):
+def download_file(item, output_dir_name, audio_only):
     """
     Function that runs on the thread; download item parameter to output directory.
 
     :param item: str
     :param output_dir_name: str
+    :param audio_only: bool
     :return: None
     """
     try:
         print(f'\nStarting downloading {item}')
         logging.info(f'Working on {item}')
         current_video = create_video_object(item)
-        download_video(current_video, output_dir_name)
+        download_video(current_video, output_dir_name, audio_only)
         print(f'\nCompleted {item}')
         return f'Done working on {item}'
     except Exception as e:
