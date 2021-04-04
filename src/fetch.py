@@ -90,7 +90,7 @@ def make_and_append_thread(executor, output_dir, threads_list, video, audio_only
     :param executor: concurrent.futures.ThreadPoolExecutor()
     :param output_dir: str
     :param threads_list: list
-    :param video: str?
+    :param video: str
     :return:
     """
     try:

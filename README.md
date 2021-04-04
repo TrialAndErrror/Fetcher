@@ -17,6 +17,11 @@ Fetcher will create a directory for each CSV file in the root directory.
 
 Run your native video player to access the video files in each directory.
 
+## Audio Files:
+If you wish to capture audio only, add the prefix [AUDIO] to the filename of your CSV file; Fetcher will recognize this
+tag and only download the audio from the URLs. Currently it still downloads them as mp4 files, but with no video, thus
+reducing the file size.
+
 ## Technical Tips:
 The url detection is handled in fetcher.fetch.read_spreadsheet(). It matches based on string.startswith(),
 so if you run into errors with Fetcher detecting headings as urls, check that piece out.
