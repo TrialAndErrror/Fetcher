@@ -27,7 +27,6 @@ def timer(func):
 
 def start_logging(debug_mode=False):
     log_format = '%(asctime)s:%(levelname)s:%(message)s'
-    # logging.basicConfig(filename='info.log', level=logging.INFO, format=log_format)
     if debug_mode:
         logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=log_format)
     else:
