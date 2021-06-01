@@ -46,7 +46,7 @@ def create_video_object(url):
     """
 
     try:
-        video_object = pytube.YouTube(url)
+        video_object = pytube.YouTube(url=url)
     except Exception as e:
         logging.warning(f'Could not create youtube video object. \n\nError {e}')
     else:

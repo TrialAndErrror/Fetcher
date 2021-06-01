@@ -116,3 +116,5 @@ def download_file(item, output_dir_name):
         logging.warning(f'Error downloading {item};\n\nerror {e}')
 
 
+def download_single_video(url):
+    download_file(url, 'Downloads')

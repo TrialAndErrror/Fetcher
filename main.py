@@ -1,4 +1,7 @@
-from src.fetch import fetch
+import sys
+
+from src.fetch import fetch, download_single_video, download_all_videos
+from src.args import parse_args
 from src.debug_tools import timer, report_success_or_failure
 
 
@@ -9,8 +12,15 @@ def fetch_with_timer():
 
     :return: None
     """
-    num_sheets, num_videos = fetch()
-    report_success_or_failure(num_sheets, num_videos)
+    args = parse_args()
+    if args.get("url", False):
+        download_single_video(args["url"])
+    else:
+        if args.get("file", False):
+            download_all_videos([args["file"]])
+        else:
+            num_sheets, num_videos = fetch()
+            report_success_or_failure(num_sheets, num_videos)
 
 
 if __name__ == '__main__':
