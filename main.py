@@ -1,8 +1,7 @@
-import sys
-
-from src.fetch import fetch, download_single_video, download_all_videos
+from src.fetch import fetch, run_single_sheet, run_single_file
 from src.args import parse_args
 from src.debug_tools import timer, report_success_or_failure
+from src.gui_src import run_gui
 
 
 @timer
@@ -12,15 +11,22 @@ def fetch_with_timer():
 
     :return: None
     """
+
     args = parse_args()
-    if args.get("url", False):
-        download_single_video(args["url"])
+    print(args)
+
+    if args.get("gui", False):
+        run_gui()
+
+    elif args.get("url", False):
+        run_single_file(args)
+        print(f'\nSuccess! Downloaded {args["url"]}.')
     else:
         if args.get("file", False):
-            download_all_videos([args["file"]])
+            num_sheets, num_videos = run_single_sheet(args)
         else:
-            num_sheets, num_videos = fetch()
-            report_success_or_failure(num_sheets, num_videos)
+            num_sheets, num_videos = fetch(audio=args.get("audio", False))
+        report_success_or_failure(num_sheets, num_videos)
 
 
 if __name__ == '__main__':

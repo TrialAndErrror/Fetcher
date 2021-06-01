@@ -1,7 +1,10 @@
 import pytube
 import logging
+import os
+from pathlib import Path
+import moviepy.editor as mp
 
-# This hard-coded default itag represents 720p videostreams. You ca
+# This hard-coded default itag represents 720p videostreams.
 DEFAULT_ITAG = 22
 AUDIO_ITAG = 251
 
@@ -32,6 +35,11 @@ def download_video(target_video: pytube.YouTube, target_path: str, audio_only: b
     :return: None
     """
     try:
+        """
+        Starting from default ITAG,
+        use a while loop to get streams by ITAG.
+        Decrement by 1 until we get a valid stream.
+        """
         itag = DEFAULT_ITAG if not audio_only else AUDIO_ITAG
         stream = target_video.streams.get_by_itag(itag)
         while not stream:
@@ -41,9 +49,44 @@ def download_video(target_video: pytube.YouTube, target_path: str, audio_only: b
     except Exception as e:
         logging.warning(f'Error getting the default stream.\n\nError code {e}')
     else:
-        logging.info(f'Downloading video to {target_path}...')
-        stream.download(target_path)
-        logging.info(f'Done downloading to {target_path}.')
+        """
+        Cleanup the filename before downloading so that we can avoid changing the filename of videos with
+        invalid characters in their titles.
+        
+        Omitted because of MoviePy error: []
+        """
+        stream_title = process_title(stream.title)
+        file_name = "".join(x for x in stream_title if x.isalnum() or x in "_ ()-")
+
+
+        """
+        Once we have a valid stream and filename, download to target path
+        """
+        logging.info(f'Downloading {file_name} to {target_path}...')
+
+        stream.download(target_path, filename=file_name)
+
+        """
+        Special handling for audio only files; they need to be renamed
+        """
+        if audio_only:
+            """
+            Rename file from mp4 to mp3
+            """
+            clip_path = str(Path(os.getcwd(), target_path, f"{file_name}.webm"))
+            my_clip = mp.AudioFileClip(clip_path)
+            print(f'Converting {file_name} to MP3 file')
+            my_clip.write_audiofile(str(Path(os.getcwd(), target_path, f'{file_name}.mp3')))
+            os.remove(Path(target_path, f'{file_name}.webm'))
+
+        logging.info(f'Done downloading {file_name}.')
+
+
+def process_title(title):
+    stream_title = title
+    stream_title = stream_title.replace("[", '(')
+    stream_title = stream_title.replace("]", ")")
+    return stream_title
 
 
 def create_video_object(url):
@@ -56,6 +99,9 @@ def create_video_object(url):
     """
 
     try:
+        """
+        Attempt to make the video object; if this fails, then PyTube isn't working.
+        """
         video_object = pytube.YouTube(url=url)
     except Exception as e:
         logging.warning(f'Could not create youtube video object. \n\nError {e}')

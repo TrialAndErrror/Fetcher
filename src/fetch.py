@@ -2,13 +2,16 @@ import concurrent.futures
 import logging
 import time
 
+from .debug_tools import report_success_or_failure
 from .video_actions import download_video, create_video_object
 from .file_actions import find_files, read_list_path
 
 
-def fetch():
+def fetch(audio=False):
     """
     Perform Video Fetch.
+
+    audio is optional param that indicates whether to just download audio.
     :return: None
     """
     files_found, files_list = find_files()
@@ -16,24 +19,27 @@ def fetch():
     num_videos = 0
     if files_found:
         logging.info(f'Files list: {files_list}')
-        num_sheets, num_videos = download_all_videos(files_list)
+        num_sheets, num_videos = download_all_videos(files_list, audio=audio)
     else:
         logging.warning('No files found; please place CSV files in this directory')
     return num_sheets, num_videos
 
 
-def download_all_videos(files_list):
+def download_all_videos(files_list, audio=False):
     """
     Download all videos in all files for a given list of files.
+
+    audio param is optional flag to indicate only audio downloads.
     :param files_list: list(str)
+    :param audio: bool
     :return: None
     """
     count_sheets = len(files_list)
     count_videos = 0
     file: str
-    audio = False
+    # audio = False
     for file in files_list:
-        if file.startswith('[AUDIO]'):
+        if file.startswith('[AUDIO]') or audio:
             print(f'Working on Audio Spreadsheet {file[7:]}')
             audio = True
         else:
@@ -122,5 +128,16 @@ def download_file(item, output_dir_name, audio_only):
         logging.warning(f'Error downloading {item};\n\nerror {e}')
 
 
-def download_single_video(url):
-    download_file(url, 'Downloads')
+def download_single_video(url, audio_only):
+    download_file(url, 'Downloads', audio_only)
+
+
+def run_single_sheet(args):
+    return download_all_videos([args["file"]], audio=args.get("audio", False))
+
+
+def run_single_file(args):
+    download_single_video(args["url"], args.get("audio", False))
+    num_sheets = 0
+    num_videos = 1
+    return num_sheets, num_videos
