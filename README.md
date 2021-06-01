@@ -8,14 +8,30 @@ Fetcher looks for any valid YouTube urls and ignores any other text, so feel fre
 
 Fetcher uses multithreading with a default maximum workers of 5, but that can be changed within fetch.py. 
 
+## Setup
+* Create a virtual environment and install the requirements.
+    * python -m venv venv
+    * pip install -r requirements.txt
+
 ## Usage:
-Place a CSV file in the root directory of the project (where main.py is located).
+#### Spreadsheet (Default Setting):
+* Place a CSV file in the root directory of the project (where main.py is located).
 
-Run main.py.
+* Run main.py.
 
-Fetcher will create a directory for each CSV file in the root directory.
+* Fetcher will create a directory for each CSV file in the root directory.
 
-Run your native video player to access the video files in each directory.
+* Run your native video player to access the video files in each directory.
+
+#### Single File
+* run main.py from the command line with the -u or --url flag to specify a URL.
+    * ex: python main.py -u https://www.youtube.com/watch?v=xQJ-3PbJoYY
+
+
+#### Spreadsheet (from command line)
+* run main.py from the command line with the -f or --file flag to specify a spreadsheet file.
+    * ex: python main.py -f video_list.csv
+
 
 ## Technical Tips:
 The url detection is handled in fetcher.fetch.read_spreadsheet(). It matches based on string.startswith(),

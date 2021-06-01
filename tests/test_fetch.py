@@ -1,10 +1,12 @@
 from unittest import TestCase
-from src.fetcher.fetch import read_spreadsheet
+from src.fetch import read_spreadsheet
 import csv
 import os
+from pathlib import Path
+
 
 class TestReadSpreadsheet(TestCase):
-	def test_read_spreadsheet(self):
+	def setUp(self) -> None:
 		sample_sheet = [
 			["not a link", "also not a link", "https://www.google.com"],
 			["https://www.youtube.com/watch?v=h828fACU9ik", "TnE 100 Days of Talking Episode 1", "description"],
@@ -12,16 +14,20 @@ class TestReadSpreadsheet(TestCase):
 			["Nothing to see here..."]
 		]
 
-		test_filename = 'sample_sheet.csv'
+		self.test_filename = 'sample_sheet.csv'
 
-		with open(test_filename, 'w', newline='') as file:
+		with open(self.test_filename, 'w+') as file:
 			writer = csv.writer(file)
-			writer.writerows(sample_sheet)
+			for line in sample_sheet:
+				writer.writerow(line)
 
+	def tearDown(self) -> None:
+		os.remove('sample_sheet.csv')
 
-		test_output_dir, test_video_files = read_spreadsheet(test_filename)
+	def test_read_spreadsheet(self) -> None:
+		test_output_dir, test_video_files = read_spreadsheet(self.test_filename)
 
-		self.assertEqual(test_output_dir, os.path.join(os.getcwd, 'sample_sheet'))
+		self.assertEqual(Path(test_output_dir), Path('sample_sheet'))
 
 		self.assertIsNotNone(test_video_files)
 
@@ -34,5 +40,5 @@ class TestReadSpreadsheet(TestCase):
 
 		self.assertNotIn('https://www.google.com', test_video_files)
 
-		os.remove('sample_sheet.csv')
+
 

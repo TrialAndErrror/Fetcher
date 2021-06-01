@@ -86,9 +86,12 @@ def get_link_entry_list(file):
     :return: entry_list: list
     """
     try:
-        item_list = file.read().split(',')
+        file_contents = file.read()
+        line_list = file_contents.split('\n')
+        item_list = []
+        for line in line_list:
+            item_list += line.split(',')
     except Exception as e:
         logging.warning(f'Error reading file; error {e}')
     else:
-        entry_list = [item.replace('\n', '') for item in item_list]
-        return entry_list
+        return item_list

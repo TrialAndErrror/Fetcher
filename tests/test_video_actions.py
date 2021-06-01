@@ -1,7 +1,7 @@
 import os
 import unittest
 import time
-from .video_actions import create_video_object, download_video
+from src.video_actions import create_video_object, download_video
 from pytube import YouTube
 
 TEST_URLS = [
@@ -37,12 +37,16 @@ class TestVideoActions(unittest.TestCase):
     def test_download_video(self):
         for num in range(0, 5):
             path = os.path.join(os.getcwd(), 'tests')
+            print(f'Starting download of video {num + 1}')
             download_video(self.obj_list[num], path)
+            print(f'Finished download of video {num + 1}')
             file_exists = os.path.exists(path)
             self.assertTrue(file_exists)
             if file_exists:
                 for file in os.listdir(path):
                     os.remove(os.path.join(path, file))
+            print(f'Removed video {num + 1}')
+
             time.sleep(1)
 
 
