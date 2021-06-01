@@ -2,7 +2,8 @@ import pytube
 import logging
 import os
 from pathlib import Path
-import moviepy.editor as mp
+# from moviepy.editor import AudioFileClip
+from moviepy.audio.io import AudioFileClip
 
 # This hard-coded default itag represents 720p videostreams.
 DEFAULT_ITAG = 22
@@ -74,11 +75,12 @@ def download_video(target_video: pytube.YouTube, target_path: str, audio_only: b
             Rename file from mp4 to mp3
             """
             clip_path = str(Path(os.getcwd(), target_path, f"{file_name}.webm"))
-            my_clip = mp.AudioFileClip(clip_path)
+            my_clip = AudioFileClip.AudioFileClip(clip_path)
             print(f'Converting {file_name} to MP3 file')
             my_clip.write_audiofile(str(Path(os.getcwd(), target_path, f'{file_name}.mp3')))
             os.remove(Path(target_path, f'{file_name}.webm'))
 
+        os.startfile(target_path)
         logging.info(f'Done downloading {file_name}.')
 
 
