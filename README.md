@@ -23,6 +23,12 @@ Fetcher uses multithreading with a default maximum workers of 5, but that can be
 
 * Run your native video player to access the video files in each directory.
 
+#### GUI (In Development)
+* run main.py from the command line with the -g or --gui flag to show the GUI and manually enter data.
+    * ex: python main.py -g
+* Note: GUI still under development and does not show progress. For monitoring purposes, watch the console to make sure 
+everything is going well.
+
 #### Single File
 * run main.py from the command line with the -u or --url flag to specify a URL.
     * ex: python main.py -u https://www.youtube.com/watch?v=xQJ-3PbJoYY
