@@ -20,6 +20,7 @@ class Window(QWidget):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.setWindowTitle('Fetcher')
 
         self.ui.comboBox_sheetname.addItems(get_file_names())
         self.connect_buttons()
