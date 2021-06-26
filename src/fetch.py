@@ -5,6 +5,7 @@ import time
 from .debug_tools import report_success_or_failure
 from .video_actions import download_video, create_video_object
 from .file_actions import find_files, read_list_path
+from src.pafy_fetch import pafy_download_video
 
 
 def fetch(audio=False):
@@ -71,11 +72,16 @@ def get_all_videos(video_list, output_dir, audio_only):
     :return: None
     """
 
+    # Previous threading option - moving to PyQt5
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         threads_list = []
         for video in video_list:
             make_and_append_thread(executor, output_dir, threads_list, video, audio_only)
         thread_print_when_done(threads_list)
+
+    # Simple testing version for pafy
+    # for file in video_list:
+    #     download_file(file, output_dir, audio_only)
 
 
 def thread_print_when_done(threads_list):
@@ -120,8 +126,13 @@ def download_file(item, output_dir_name, audio_only):
     try:
         print(f'\nStarting downloading {item}')
         logging.info(f'Working on {item}')
-        current_video = create_video_object(item)
-        download_video(current_video, output_dir_name, audio_only)
+
+        # old pytube commands
+        # current_video = create_video_object(item)
+        # download_video(current_video, output_dir_name, audio_only)
+
+        pafy_download_video(item, output_dir_name, audio_only)
+
         print(f'\nCompleted {item}')
         return f'Done working on {item}'
     except Exception as e:

@@ -1,5 +1,6 @@
 from src.fetch import fetch, run_single_file, run_single_sheet
 from src.debug_tools import timer, report_success_or_failure
+from src.fetch import download_file
 
 
 def process_gui_command(command):

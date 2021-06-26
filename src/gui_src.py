@@ -1,10 +1,20 @@
 import os
+from pathlib import Path
 import time
 
+import subprocess, sys
+
+
+
 from PyQt5.QtWidgets import QWidget, QApplication
+
 import sys
-from src.fetcher_gui import Ui_Form
+from src.fetcher_gui import Ui_Form as WindowUI
 from src.gui_api import process_gui_command
+from src.gui.ProgressWindow import ProgressDisplay
+
+from src.file_actions import find_files
+from src.fetch import read_spreadsheet
 
 
 def get_file_names():
@@ -18,9 +28,12 @@ def get_file_names():
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_Form()
+        self.ui = WindowUI()
         self.ui.setupUi(self)
         self.setWindowTitle('Fetcher')
+
+        self.progress_window = None
+        self.output_dir = f'{os.getcwd()}/'
 
         self.ui.comboBox_sheetname.addItems(get_file_names())
         self.connect_buttons()
@@ -59,7 +72,8 @@ class Window(QWidget):
             self.ui.comboBox_sheetname.setEnabled(True)
 
     def connect_buttons(self):
-        self.ui.pushButton_fetch.clicked.connect(self.run_fetcher)
+        # self.ui.pushButton_fetch.clicked.connect(self.run_fetcher)
+        self.ui.pushButton_fetch.clicked.connect(self.new_run_fetcher)
 
         self.ui.radioButton_url.clicked.connect(self.enable_boxes)
         self.ui.radioButton_sheet.clicked.connect(self.enable_boxes)
@@ -67,34 +81,70 @@ class Window(QWidget):
 
     def run_fetcher(self):
         self.set_all_disabled(True)
-        self.ui.label_status.setText('Determining Command')
-        time.sleep(1)
 
         command = {}
         if self.ui.radioButton_fetch.isChecked():
             command['type'] = 'sheet'
-            status_name = 'All Videos'
         elif self.ui.radioButton_url.isChecked():
             command['type'] = 'url'
             command['url'] = self.ui.lineEdit_url.text()
-            status_name = 'Video from URL'
         elif self.ui.radioButton_sheet.isChecked():
             command['type'] = 'sheet'
             command['file'] = self.ui.comboBox_sheetname.currentText()
-            status_name = 'Videos from Spreadsheet'
         command['audio'] = self.ui.checkBox_audio.isChecked()
-        if self.ui.checkBox_audio.isChecked():
-            audio_status = 'as MP3 file'
-        else:
-            audio_status = ''
 
-        self.ui.label_status.setText(f'Downloading {status_name} {audio_status}, please wait...')
         time.sleep(1)
 
         process_gui_command(command)
         self.ui.label_status.setText(f'Downloads complete.')
         self.set_all_disabled(False)
 
+    def new_run_fetcher(self):
+        self.set_all_disabled(True)
+        output_dir = ''
+
+        if self.ui.radioButton_fetch.isChecked():
+            # Process fetch all
+            files_found, video_files = find_files()
+            if files_found:
+                for file in video_files:
+                    audio = False
+                    if file.startswith('[AUDIO]') or self.ui.checkBox_audio.isChecked():
+                        audio = True
+                    output_dir, video_files = read_spreadsheet(file)
+                    video_set = set(video_files)
+                    cleaned_video_urls = list(video_set)
+                    self.progress_window = ProgressDisplay(output_dir, urls=cleaned_video_urls, audio=audio)
+
+        elif self.ui.radioButton_url.isChecked():
+            # Process one url
+            audio = self.ui.checkBox_audio.isChecked()
+            self.progress_window = ProgressDisplay('', urls=[self.ui.lineEdit_url.text()], audio=audio)
+
+        elif self.ui.radioButton_sheet.isChecked():
+            # process one sheet
+            file = self.ui.comboBox_sheetname.currentText()
+            audio = False
+            if file.startswith('[AUDIO]') or self.ui.checkBox_audio.isChecked():
+                audio = True
+            output_dir, video_files = read_spreadsheet(file)
+            video_set = set(video_files)
+            cleaned_video_urls = list(video_set)
+            self.progress_window = ProgressDisplay(output_dir, urls=cleaned_video_urls, audio=audio)
+
+        self.output_dir = f'{os.getcwd()}/{output_dir}'
+
+        self.progress_window.done.connect(self.finish_fetch)
+
+        self.set_all_disabled(False)
+
+    def finish_fetch(self):
+        self.progress_window.close()
+
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, self.output_dir])
+
+        # os.startfile(Path(self.output_dir))
 
 def run_gui():
     app = QApplication(sys.argv)
