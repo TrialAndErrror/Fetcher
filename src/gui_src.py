@@ -4,9 +4,7 @@ import time
 
 import subprocess, sys
 
-
-
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QWidget, QApplication, QMessageBox
 
 import sys
 from src.fetcher_gui import Ui_Form as WindowUI
@@ -24,6 +22,15 @@ def get_file_names():
             or file.endswith('.csv')
             or file.endswith('.xlsx')]
 
+
+def open_folder(output_dir):
+    if sys.platform == 'darwin':
+        subprocess.call(["open", output_dir])
+
+    elif sys.platform == 'win32':
+        os.startfile(output_dir)
+    else:
+        subprocess.call(["xdg-open", output_dir])
 
 class Window(QWidget):
     def __init__(self):
@@ -138,13 +145,14 @@ class Window(QWidget):
 
         self.set_all_disabled(False)
 
-    def finish_fetch(self):
+    def finish_fetch(self, count):
         self.progress_window.close()
+        message = QMessageBox(QMessageBox.Information, 'Fetcher: Download Complete', f'Download Complete! Fetcher downloaded {count} videos.')
+        open_folder(self.output_dir)
+        message.exec_()
 
-        opener = "open" if sys.platform == "darwin" else "xdg-open"
-        subprocess.call([opener, self.output_dir])
 
-        # os.startfile(Path(self.output_dir))
+
 
 def run_gui():
     app = QApplication(sys.argv)

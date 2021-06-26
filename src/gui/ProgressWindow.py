@@ -9,7 +9,7 @@ from src.gui.progress import Ui_Form as ProgressUI
 
 
 class ProgressDisplay(QWidget):
-    done = pyqtSignal()
+    done = pyqtSignal(int)
 
     def __init__(self, output_dir, urls=None, audio=False):
         super().__init__()
@@ -21,6 +21,7 @@ class ProgressDisplay(QWidget):
         self.thread = None
         self.threads = {}
         self.worker = None
+        self.total = 1
 
         self.bars = {
             1: self.ui.progressBar_1,
@@ -48,11 +49,10 @@ class ProgressDisplay(QWidget):
         # self.thread = QThread()
 
         for num in range(1, 6):
-            self.threads[num] = self.add_thread(num, self.urls[num])
+            self.threads[num] = self.add_thread(num, self.urls.pop(0))
 
     def add_thread(self, id, url):
         thread = QThread()
-        print(f"Adding thread {id}")
 
         worker = Worker(self.output_dir, url, id)
         worker.moveToThread(thread)
@@ -65,7 +65,6 @@ class ProgressDisplay(QWidget):
         worker.finished.connect(self.process_finished_signal)
         worker.progress.connect(self.process_progress_signal)
 
-        print(f"Finished adding thread {id}")
         thread.start()
         return thread, worker
 
@@ -75,7 +74,6 @@ class ProgressDisplay(QWidget):
 
     @pyqtSlot(int, int)
     def process_progress_signal(self, value, id):
-        print(f"received progress signal({value}) from {id}")
         self.bars[id].setValue(value)
 
     def process_eta_signal(self):
@@ -83,21 +81,19 @@ class ProgressDisplay(QWidget):
 
     @pyqtSlot(str, int)
     def process_name_signal(self, name, id):
-        print(f"received name signal({name}) from {id}")
-
         self.labels[id].setText(name)
 
     @pyqtSlot(int)
     def process_finished_signal(self, id):
-        print(f"received done signal from {id}")
+        self.total += 1
         if len(self.urls) > 1:
             self.threads[id] = self.add_thread(id, self.urls.pop(0))
         else:
             self.threads.pop(id)
         if len(self.threads) == 0:
-            self.done.emit()
+            self.done.emit(self.total)
 
     def cancel_all(self):
-        self.done.emit()
+        self.done.emit(self.total)
         self.ui.pushButton_cancel.setText('Cancelling downloads...')
         self.ui.pushButton_cancel.setEnabled(False)
