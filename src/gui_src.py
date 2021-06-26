@@ -32,6 +32,7 @@ def open_folder(output_dir):
     else:
         subprocess.call(["xdg-open", output_dir])
 
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
