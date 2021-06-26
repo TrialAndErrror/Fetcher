@@ -16,11 +16,11 @@ class ProgressDisplay(QWidget):
         self.ui = ProgressUI()
         self.ui.setupUi(self)
         self.output_dir = output_dir
+
         self.urls = urls
         self.audio = audio
-        self.thread = None
+
         self.threads = {}
-        self.worker = None
         self.total = 1
 
         self.bars = {
@@ -68,16 +68,16 @@ class ProgressDisplay(QWidget):
         thread.start()
         return thread, worker
 
-    @pyqtSlot(int, int)
-    def process_size_signal(self):
-        id = self.sender().id
+    # @pyqtSlot(int, int)
+    # def process_size_signal(self):
+    #     id = self.sender().id
 
     @pyqtSlot(int, int)
     def process_progress_signal(self, value, id):
         self.bars[id].setValue(value)
 
-    def process_eta_signal(self):
-        id = self.sender().id
+    # def process_eta_signal(self):
+    #     id = self.sender().id
 
     @pyqtSlot(str, int)
     def process_name_signal(self, name, id):

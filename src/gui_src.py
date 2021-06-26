@@ -152,8 +152,6 @@ class Window(QWidget):
         message.exec_()
 
 
-
-
 def run_gui():
     app = QApplication(sys.argv)
     screen = Window()
