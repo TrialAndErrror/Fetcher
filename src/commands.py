@@ -14,7 +14,6 @@ def run_fetch(files_list, audio=False):
     count_sheets = len(files_list)
     count_videos = 0
     file: str
-    # audio = False
     for file in files_list:
         if file.startswith('[AUDIO]') or audio:
             print(f'Working on Audio Spreadsheet {file[7:]}')
@@ -31,7 +30,6 @@ def run_single_sheet(args):
     """
     Same as Run Fetch, but providing a list of one sheet as the files parameter.
     Accessible from GUI or using the -f parameter.
-
 
     :param args: dict
     :return:

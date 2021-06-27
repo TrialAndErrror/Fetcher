@@ -2,6 +2,13 @@ import argparse
 
 
 def parse_args():
+    """
+    Adds support for command-line arguments.
+    -f and -u require a paramter after (to indicate the filename or url desired),
+    -a and -g will store True when provided, so no need for parameters.
+
+    :return: dict
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("-f", "--file", required=False, help="Spreadsheet File Path")
     ap.add_argument("-u", "--url", required=False, help="Single File URL")

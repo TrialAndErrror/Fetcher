@@ -5,15 +5,21 @@ import time
 from src.pafy_fetch import pafy_download_video
 
 
-def thread_print_when_done(threads_list):
+def get_all_videos(video_list, output_dir, audio_only):
     """
-    When a thread in the threads list finishes, print the return value.
+    Command-line based threading for video downloads.
 
-    :param threads_list:
+    Create up to 5 threads at a time to get all videos. Number can be modified in max_workers parameter.
+
+    :param video_list: list
+    :param output_dir: str
     :return: None
     """
-    for thread in concurrent.futures.as_completed(threads_list):
-        logging.debug(thread.result())
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        threads_list = []
+        for video in video_list:
+            make_and_append_thread(executor, output_dir, threads_list, video, audio_only)
+        thread_print_when_done(threads_list)
 
 
 def make_and_append_thread(executor, output_dir, threads_list, video, audio_only):
@@ -55,18 +61,12 @@ def download_file(item, output_dir_name, audio_only):
         logging.warning(f'Error downloading {item};\n\nerror {e}')
 
 
-def get_all_videos(video_list, output_dir, audio_only):
+def thread_print_when_done(threads_list):
     """
-    Command-line based threading for video downloads.
+    When a thread in the threads list finishes, print the return value.
 
-    Create up to 5 threads at a time to get all videos. Number can be modified in max_workers parameter.
-
-    :param video_list: list
-    :param output_dir: str
+    :param threads_list:
     :return: None
     """
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        threads_list = []
-        for video in video_list:
-            make_and_append_thread(executor, output_dir, threads_list, video, audio_only)
-        thread_print_when_done(threads_list)
+    for thread in concurrent.futures.as_completed(threads_list):
+        logging.debug(thread.result())
