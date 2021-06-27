@@ -94,3 +94,16 @@ def get_link_entry_list(file):
     else:
         entry_list = [entry for entry in item_list if len(entry) > len(YT_PREFIX)]
         return entry_list
+
+
+def read_spreadsheet(file):
+    """
+    Returns output directory and list of video files from the spreadsheet.
+
+    :param file:
+    :return: str, list
+    """
+    output_dir_name = file[:-4]
+    all_cells = read_list_path(file)
+    current_video_files = [item for item in all_cells if item.startswith('https://www.youtube.com/watch')]
+    return output_dir_name, current_video_files

@@ -2,7 +2,7 @@ import os
 import unittest
 import time
 from src.video_actions import create_video_object, download_video
-from pytube import YouTube
+from src.pafy_fetch import pafy_download_video
 from pathlib import Path
 
 TEST_URLS = [
@@ -21,25 +21,18 @@ EXPECTED_NAMES = [
 
 
 class TestVideoActions(unittest.TestCase):
-    @classmethod
-    def setUp(self) -> None:
-        self.obj_list = [create_video_object(TEST_URLS[num]) for num in range(5)]
+    # @classmethod
+    # def setUp(self) -> None:
+    #     self.obj_list = [create_video_object(TEST_URLS[num]) for num in range(5)]
     #
     # @classmethod
     # def tearDown(self) -> None:
-
-    def test_create_video_object(self):
-        for num in range(0, 5):
-            created_object = self.obj_list[num]
-            self.assertIsInstance(created_object, YouTube)
-            self.assertTrue(len(created_object.streams) > 0)
-            self.assertTrue(created_object.title == EXPECTED_NAMES[num])
 
     def test_download_video(self):
         for num in range(0, 5):
             path = os.path.join(os.getcwd(), 'tests')
             print(f'Starting download of video {num + 1}')
-            download_video(self.obj_list[num], path, audio_only=False)
+            pafy_download_video(TEST_URLS[num], path, audio_only=False)
             print(f'Finished download of video {num + 1}')
             file_exists = os.path.exists(path)
             self.assertTrue(file_exists)
@@ -54,7 +47,7 @@ class TestVideoActions(unittest.TestCase):
         for num in range(0, 5):
             path = str(Path(os.getcwd(), 'tests'))
             print(f'Starting download of video {num + 1}')
-            download_video(self.obj_list[num], path, audio_only=True)
+            pafy_download_video(TEST_URLS[num], path, audio_only=True)
             print(f'Finished download of video {num + 1}')
             file_exists = os.path.exists(path)
             self.assertTrue(file_exists)

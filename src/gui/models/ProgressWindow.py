@@ -1,11 +1,9 @@
-import time
-
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QThread
 from PyQt5.QtWidgets import QWidget
 
-from src.gui.Worker import Worker
+from src.gui.models.Worker import Worker
 
-from src.gui.progress import Ui_Form as ProgressUI
+from src.gui.WindowForms.progress import Ui_Form as ProgressUI
 
 
 class ProgressDisplay(QWidget):

@@ -1,24 +1,18 @@
 import pafy
 
 
-def pafy_download_video(file, output_dir_name, audio_only):
+def pafy_download_video(url, output_dir_name, audio_only):
+    """
+    Determine if audio only or not, then download accordingly.
+    
+    :param url: 
+    :param output_dir_name: 
+    :param audio_only: 
+    :return: 
+    """
+    video_obj = pafy.new(url)
     if audio_only:
-        download_audio(file, output_dir_name)
+        video_stream = video_obj.getbestaudio('m4a', False)
     else:
-        download_video(file, output_dir_name)
-
-
-def mycb(total, recvd, ratio, rate, eta):
-    print(recvd, ratio, eta)
-
-
-def download_video(file, output_dir_name):
-    video_obj = pafy.new(file)
-    video_stream = video_obj.getbest('mp4', False)
-    video_stream.download(output_dir_name)
-
-
-def download_audio(file, output_dir_name):
-    video_obj = pafy.new(file)
-    video_stream = video_obj.getbestaudio('m4a', False)
+        video_stream = video_obj.getbest('mp4', False)
     video_stream.download(output_dir_name)

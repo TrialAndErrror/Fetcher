@@ -1,7 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
-import time
-import random
 import pafy
+
 
 class Worker(QObject):
     finished = pyqtSignal(int)
@@ -28,6 +27,7 @@ class Worker(QObject):
         self.video = pafy.new(self.url)
         self.name.emit(self.video.title, self.id)
         print(f'Starting on thread {self.id}')
+
         if self.audio:
             try:
                 video_stream = self.video.getbestaudio('m4a', False)
@@ -36,6 +36,7 @@ class Worker(QObject):
                 print(e)
             else:
                 video_stream.download(self.output_dir, callback=self.callback)
+
         else:
             try:
                 video_stream = self.video.getbest('mp4', False)
@@ -44,7 +45,11 @@ class Worker(QObject):
                 print(e)
             else:
                 video_stream.download(self.output_dir, callback=self.callback)
+
         print(f"Finished downloading on thread {self.id}")
+        self.reset_progress_bar()
+
+    def reset_progress_bar(self):
         self.name.emit('', self.id)
         self.progress.emit(0, self.id)
         self.finished.emit(self.id)
