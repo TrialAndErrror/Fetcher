@@ -14,8 +14,7 @@ def find_files():
     try:
         home_dir = os.listdir()
     except Exception as e:
-        logging.warning('Error reading files in home directory')
-        logging.warning(f'Error was {e}')
+        logging.warning('Error reading files in home directory\nError was {e}')
     else:
         files_list = [file for file in home_dir if file.endswith('.csv')]
         files_found = bool(len(files_list) > 0)

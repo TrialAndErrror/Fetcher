@@ -2,7 +2,7 @@ import os
 import unittest
 import time
 from src.video_actions import create_video_object, download_video
-from src.pafy_fetch import pafy_download_video
+from src.FetcherModel import pafy_download_video
 from pathlib import Path
 
 TEST_URLS = [
