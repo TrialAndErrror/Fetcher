@@ -62,8 +62,8 @@ def log_empty_video_list(current_video_files):
     :param current_video_files: list
     :return: None
     """
-    is_files_found = bool(len(current_video_files) > 0)
-    if not is_files_found:
+    files_found = bool(len(current_video_files) > 0)
+    if not files_found:
         logging.warning('No video links found')
 
 
@@ -88,10 +88,10 @@ def get_link_entry_list(file):
     """
     try:
         item_list = file.read().replace('\n', ',').split(',')
-        item_list = [item.strip(' " " ') for item in item_list]
     except Exception as e:
         logging.warning(f'Error reading file; error {e}')
     else:
+        item_list = [item.strip(' " " ') for item in item_list]
         entry_list = [entry for entry in item_list if len(entry) > len(YT_PREFIX)]
         return entry_list
 
@@ -101,7 +101,7 @@ def read_spreadsheet(file):
     Returns output directory and list of video files from the spreadsheet.
 
     :param file:
-    :return: str, list
+    :return: output_dir_name: str, current_video_files: list
     """
     output_dir_name = file[:-4]
     all_cells = read_list_path(file)
