@@ -14,8 +14,7 @@ def find_files():
     try:
         home_dir = os.listdir()
     except Exception as e:
-        logging.warning('Error reading files in home directory')
-        logging.warning(f'Error was {e}')
+        logging.warning('Error reading files in home directory\nError was {e}')
     else:
         files_list = [file for file in home_dir if file.endswith('.csv')]
         files_found = bool(len(files_list) > 0)
@@ -62,8 +61,8 @@ def log_empty_video_list(current_video_files):
     :param current_video_files: list
     :return: None
     """
-    is_files_found = bool(len(current_video_files) > 0)
-    if not is_files_found:
+    files_found = bool(len(current_video_files) > 0)
+    if not files_found:
         logging.warning('No video links found')
 
 
@@ -88,10 +87,10 @@ def get_link_entry_list(file):
     """
     try:
         item_list = file.read().replace('\n', ',').split(',')
-        item_list = [item.strip(' " " ') for item in item_list]
     except Exception as e:
         logging.warning(f'Error reading file; error {e}')
     else:
+        item_list = [item.strip(' " " ') for item in item_list]
         entry_list = [entry for entry in item_list if len(entry) > len(YT_PREFIX)]
         return entry_list
 
@@ -101,9 +100,9 @@ def read_spreadsheet(file):
     Returns output directory and list of video files from the spreadsheet.
 
     :param file:
-    :return: str, list
+    :return: output_dir_name: str, current_video_files: list
     """
     output_dir_name = file[:-4]
     all_cells = read_list_path(file)
-    current_video_files = [item for item in all_cells if item.startswith('https://www.youtube.com/watch')]
+    current_video_files = [item for item in all_cells if item.startswith(YT_PREFIX)]
     return output_dir_name, current_video_files
