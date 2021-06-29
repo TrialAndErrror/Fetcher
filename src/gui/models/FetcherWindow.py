@@ -1,10 +1,11 @@
 import os
-import subprocess
 import sys
 
 from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
-from src.file_actions import find_files, read_spreadsheet
+
+from src.file_actions import find_files
 from src.gui.WindowForms.fetcher_gui import Ui_Form as WindowUI
+from src.gui.gui_tools import get_file_names, open_folder, process_one_sheet
 from src.gui.models.ProgressWindow import ProgressDisplay
 
 
@@ -88,8 +89,9 @@ class FetcherWindow(QWidget):
             then create a progress display for just that URL.
             """
             audio = self.ui.checkBox_audio.isChecked()
-            self.progress_window = ProgressDisplay('', urls=[self.ui.lineEdit_url.text()], audio=audio)
             output_dir = 'Downloads'
+
+            self.progress_window = ProgressDisplay(output_dir, urls=[self.ui.lineEdit_url.text()], audio=audio)
 
         elif self.ui.radioButton_sheet.isChecked():
             """
@@ -138,36 +140,6 @@ class FetcherWindow(QWidget):
         Re-enable all buttons.
         """
         self.set_all_disabled(False)
-
-
-def get_file_names():
-    file_names = os.listdir(os.getcwd())
-    return [file for file in file_names
-            if file.endswith('.xls')
-            or file.endswith('.csv')
-            or file.endswith('.xlsx')]
-
-
-def open_folder(output_dir):
-    if sys.platform == 'darwin':
-        subprocess.call(["open", output_dir])
-
-    elif sys.platform == 'win32':
-        os.startfile(output_dir)
-    else:
-        subprocess.call(["xdg-open", output_dir])
-
-
-def clean_video_urls(video_files):
-    video_set = set(video_files)
-    cleaned_video_urls = list(video_set)
-    return cleaned_video_urls
-
-
-def process_one_sheet(file, audio):
-    output_dir, video_files = read_spreadsheet(file)
-    cleaned_video_urls = clean_video_urls(video_files)
-    return ProgressDisplay(output_dir, urls=cleaned_video_urls, audio=audio)
 
 
 def run_gui():

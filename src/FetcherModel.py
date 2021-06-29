@@ -35,7 +35,7 @@ class Fetcher:
         :return:
         """
         try:
-            thread = executor.submit(self.download_file, video, self.output_dir, self.audio_only)
+            thread = executor.submit(self.download_file, video)
         except Exception as e:
             logging.warning(f'Error making thread for {video};\n\n error code {e}')
         else:

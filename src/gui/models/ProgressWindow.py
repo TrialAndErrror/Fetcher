@@ -1,9 +1,8 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QThread
 from PyQt5.QtWidgets import QWidget
 
-from src.gui.models.Worker import Worker
-
 from src.gui.WindowForms.progress import Ui_Form as ProgressUI
+from src.gui.models.Worker import Worker
 
 
 class ProgressDisplay(QWidget):
@@ -19,7 +18,7 @@ class ProgressDisplay(QWidget):
         self.audio = audio
 
         self.threads = {}
-        self.total = 1
+        self.total = 0
 
         self.bars = {
             1: self.ui.progressBar_1,
@@ -42,7 +41,14 @@ class ProgressDisplay(QWidget):
 
         self.run()
 
+    def reset_labels(self):
+        self.ui.label_title.adjustSize()
+        for num in range(1, 6):
+            self.bars[num].setValue(0)
+            self.labels[num].setText('')
+
     def run(self):
+        self.reset_labels()
         print(f"Progress Window URLS {self.urls}")
 
         max_threads = len(self.urls) + 1 if len(self.urls) < 5 else 6
@@ -52,7 +58,7 @@ class ProgressDisplay(QWidget):
     def add_thread(self, id, url):
         thread = QThread()
 
-        worker = Worker(self.output_dir, url, id)
+        worker = Worker(self.output_dir, url, id, self.audio)
         worker.moveToThread(thread)
 
         thread.started.connect(worker.run)

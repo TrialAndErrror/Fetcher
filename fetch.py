@@ -1,7 +1,7 @@
 from src.commands import run_single_sheet, run_single_url, run_fetch
+from src.gui.models.FetcherWindow import run_gui
 from src.tools.args import parse_args
 from src.tools.debug_tools import timer, report_success_or_failure
-from src.gui.models.FetcherWindow import run_gui
 
 
 @timer
@@ -31,6 +31,7 @@ def fetch_with_timer():
         Flags: -g, --gui
         Example: python fetch.py -g
         """
+
         run_gui()
 
     elif args.get("url", False):
