@@ -44,7 +44,6 @@ class ProgressDisplay(QWidget):
 
     def run(self):
         print(f"Progress Window URLS {self.urls}")
-        # self.thread = QThread()
 
         for num in range(1, 6):
             self.threads[num] = self.add_thread(num, self.urls.pop(0))

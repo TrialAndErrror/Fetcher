@@ -1,7 +1,7 @@
 import os
+import sys
 
-from PyQt5.QtWidgets import QWidget, QMessageBox
-
+from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
 from src.file_actions import find_files
 from src.gui.WindowForms.fetcher_gui import Ui_Form as WindowUI
 from src.gui.gui_tools import get_file_names, process_one_sheet, open_folder
@@ -138,3 +138,10 @@ class FetcherWindow(QWidget):
         Re-enable all buttons.
         """
         self.set_all_disabled(False)
+
+
+def run_gui():
+    app = QApplication(sys.argv)
+    screen = FetcherWindow()
+    screen.show()
+    sys.exit(app.exec_())

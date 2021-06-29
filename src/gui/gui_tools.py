@@ -2,10 +2,7 @@ import os
 import subprocess
 import sys
 
-from PyQt5.QtWidgets import QApplication
-
 from src.file_actions import read_spreadsheet
-from src.gui.models.FetcherWindow import FetcherWindow
 from src.gui.models.ProgressWindow import ProgressDisplay
 
 
@@ -37,10 +34,3 @@ def process_one_sheet(file, audio):
     output_dir, video_files = read_spreadsheet(file)
     cleaned_video_urls = clean_video_urls(video_files)
     return ProgressDisplay(output_dir, urls=cleaned_video_urls, audio=audio)
-
-
-def run_gui():
-    app = QApplication(sys.argv)
-    screen = FetcherWindow()
-    screen.show()
-    sys.exit(app.exec_())
