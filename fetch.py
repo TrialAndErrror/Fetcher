@@ -1,8 +1,8 @@
-from src.fetch import fetch
+from src.main import fetch
 from src.commands import run_single_sheet, run_single_url
 from src.tools.args import parse_args
 from src.tools.debug_tools import timer, report_success_or_failure
-from src.gui.gui_tools import run_gui
+from src.gui.models.FetcherWindow import run_gui
 
 
 @timer

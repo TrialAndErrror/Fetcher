@@ -78,7 +78,7 @@ def print_error_message(num_sheets, num_videos):
 
     :param num_sheets: int
     :param num_videos: int
-    :return:
+    :return: None
     """
     print(f'\nUh-oh, something went wrong!')
 

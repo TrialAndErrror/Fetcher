@@ -2,7 +2,7 @@ import os
 import unittest
 import time
 from src.video_actions import create_video_object, download_video
-from src.pafy_fetch import pafy_download_video
+from src.pafy_fetch import pafy_download
 from pathlib import Path
 
 TEST_URLS = [
@@ -32,7 +32,7 @@ class TestVideoActions(unittest.TestCase):
         for num in range(0, 5):
             path = os.path.join(os.getcwd(), 'tests')
             print(f'Starting download of video {num + 1}')
-            pafy_download_video(TEST_URLS[num], path, audio_only=False)
+            pafy_download(TEST_URLS[num], path, audio_only=False)
             print(f'Finished download of video {num + 1}')
             file_exists = os.path.exists(path)
             self.assertTrue(file_exists)
@@ -47,7 +47,7 @@ class TestVideoActions(unittest.TestCase):
         for num in range(0, 5):
             path = str(Path(os.getcwd(), 'tests'))
             print(f'Starting download of video {num + 1}')
-            pafy_download_video(TEST_URLS[num], path, audio_only=True)
+            pafy_download(TEST_URLS[num], path, audio_only=True)
             print(f'Finished download of video {num + 1}')
             file_exists = os.path.exists(path)
             self.assertTrue(file_exists)

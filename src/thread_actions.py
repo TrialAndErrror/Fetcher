@@ -2,7 +2,7 @@ import concurrent.futures
 import logging
 import time
 
-from src.pafy_fetch import pafy_download_video
+from src.pafy_fetch import pafy_download
 
 
 def get_all_videos(video_list, output_dir, audio_only):
@@ -54,7 +54,7 @@ def download_file(item, output_dir_name, audio_only):
         print(f'\nStarting downloading {item}')
         logging.info(f'Working on {item}')
 
-        pafy_download_video(item, output_dir_name, audio_only)
+        pafy_download(item, output_dir_name, audio_only)
 
         print(f'\nCompleted {item}')
     except Exception as e:
