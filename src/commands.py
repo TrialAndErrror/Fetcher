@@ -1,6 +1,6 @@
 import logging
 
-from src.file_actions import find_files, read_spreadsheet
+from src.file_actions import find_files, find_youtube_links
 from src.FetcherModel import Fetcher
 
 
@@ -52,14 +52,14 @@ def download_list_of_videos(files_list, audio_only=False):
         """
         Set audio parameter if it's an audio only sheet
         """
-        if file.startswith('[AUDIO]'):
-            audio_only = True
+        audio = False
 
         """
         Describe type of sheet to console and log.
         """
-        if audio_only:
+        if audio_only or file.startswith('[AUDIO]'):
             message = f'Working on Audio Spreadsheet {file[7:]}'
+            audio = True
         else:
             message = f'\nWorking on {file}'
         print(message)
@@ -68,12 +68,12 @@ def download_list_of_videos(files_list, audio_only=False):
         """
         Setup output directory, and add count of videos for the final report
         """
-        output_dir_name, current_video_files = read_spreadsheet(file)
+        output_dir_name, current_video_files = find_youtube_links(file)
         count_videos += len(current_video_files)
         """
         Download all videos
         """
-        fetcher_obj = Fetcher(current_video_files, output_dir_name, audio_only)
+        fetcher_obj = Fetcher(current_video_files, output_dir_name, audio)
         fetcher_obj.get_videos_using_threads()
 
     """

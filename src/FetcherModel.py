@@ -1,5 +1,6 @@
 import concurrent.futures
 import logging
+import os
 import time
 
 import pafy
@@ -10,7 +11,7 @@ class Fetcher:
         self.video_list = video_list
         self.output_dir = output_dir
         self.audio_only = audio_only
-
+        os.makedirs(self.output_dir, exist_ok=True)
         self.threads_list = []
 
     def get_videos_using_threads(self):
@@ -82,4 +83,4 @@ class Fetcher:
             video_stream = video_obj.getbestaudio('m4a', False)
         else:
             video_stream = video_obj.getbest('mp4', False)
-        video_stream.download(self.output_dir)
+        video_stream.download(filepath=self.output_dir)
