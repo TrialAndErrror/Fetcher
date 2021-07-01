@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
 
 from src.file_actions import find_files
-from src.gui.WindowForms.fetcher_gui import Ui_Form as WindowUI
+from src.gui.WindowForms.fetcher import Ui_Form as WindowUI
 from src.gui.gui_tools import get_file_names, open_folder, process_one_sheet
 from src.gui.models.ProgressWindow import ProgressDisplay
 
@@ -17,10 +17,11 @@ class FetcherWindow(QWidget):
         self.setWindowTitle('Fetcher')
 
         self.progress_window = None
-        self.output_dir = f'{os.getcwd()}/'
+        self.output_dir = None
 
-        self.ui.comboBox_sheetname.addItems(get_file_names())
         self.connect_buttons()
+        self.initialize_window()
+
         self.show()
 
     def set_all_disabled(self, status):
@@ -65,9 +66,16 @@ class FetcherWindow(QWidget):
 
         self.ui.lineEdit_url.textChanged.connect(lambda: self.ui.radioButton_url.setChecked(True))
 
+    def initialize_window(self):
+        self.ui.comboBox_sheetname.addItems(get_file_names())
+
+        self.ui.radioButton_fetch.setChecked(True)
+        self.ui.lineEdit_url.setDisabled(True)
+        self.ui.comboBox_sheetname.setDisabled(True)
+
     def run_fetcher(self):
         self.set_all_disabled(True)
-        output_dir = ''
+        output_dir = 'Downloads'
 
         if self.ui.radioButton_fetch.isChecked():
             """
@@ -91,8 +99,6 @@ class FetcherWindow(QWidget):
             then create a progress display for just that URL.
             """
             audio = self.ui.checkBox_audio.isChecked()
-            output_dir = 'Downloads'
-
             self.progress_window = ProgressDisplay(output_dir, urls=[self.ui.lineEdit_url.text()], audio=audio)
 
         elif self.ui.radioButton_sheet.isChecked():
@@ -142,6 +148,7 @@ class FetcherWindow(QWidget):
         Re-enable all buttons.
         """
         self.set_all_disabled(False)
+        self.initialize_window()
 
 
 def run_gui():

@@ -1,4 +1,5 @@
 import logging
+import os
 
 from src.file_actions import find_files, find_youtube_links
 from src.FetcherModel import Fetcher
@@ -69,6 +70,7 @@ def download_list_of_videos(files_list, audio_only=False):
         Setup output directory, and add count of videos for the final report
         """
         output_dir_name, current_video_files = find_youtube_links(file)
+        os.makedirs(output_dir_name, exist_ok=True)
         count_videos += len(current_video_files)
         """
         Download all videos

@@ -25,14 +25,21 @@ def fetch_with_timer():
     Note: Option 1 (GUI) includes radio buttons for selecting options 2-4.
     """
 
-    if args.get("gui", False):
+    if args.get("cl", False):
         """
+        Option 1: Command Line Fetch (Download All Spreadsheets in Root Directory)
+
         Option 1: Graphical User Interface mode
         Flags: -g, --gui
         Example: python fetch.py -g
         """
+        num_sheets, num_videos = run_fetch(audio=args.get("audio", False))
+        report_success_or_failure(num_sheets, num_videos)
 
-        run_gui()
+        """
+        note: "audio" parameter indicates to only download audio.
+        On command line, this is accessible from -a or --audio
+        """
 
     elif args.get("url", False):
         """
@@ -42,27 +49,23 @@ def fetch_with_timer():
         """
         run_single_url(args)
         print(f'\nSuccess! Downloaded {args["url"]}.')
-    else:
-        if args.get("file", False):
-            """
-            Option 3: Download Single Spreadsheet
-            Flags: -f, --file
-            Example: python fetch.py -f 'videos.csv'
-            """
-            num_sheets, num_videos = run_single_sheet(args)
-        else:
-            """
-            Option 4: Fetch (Download All Spreadsheets in Root Directory)
-            Flags: None
-            Example: python fetch.py
-            """
-            num_sheets, num_videos = run_fetch(audio=args.get("audio", False))
-            """
-            note: "audio" parameter indicates to only download audio.
-            On command line, this is accessible from -a or --audio
-            """
 
+    elif args.get("file", False):
+        """
+        Option 3: Download Single Spreadsheet
+        Flags: -f, --file
+        Example: python fetch.py -f 'videos.csv'
+        """
+        num_sheets, num_videos = run_single_sheet(args)
         report_success_or_failure(num_sheets, num_videos)
+
+    else:
+        """
+        Option 4: Fetch (Download All Spreadsheets in Root Directory)
+        Flags: None
+        Example: python fetch.py
+        """
+        run_gui()
 
 
 if __name__ == '__main__':
