@@ -63,6 +63,7 @@ def get_link_entry_list(file):
         logging.warning(f'Error reading file; error {e}')
     else:
         item_list = [item.strip(' " " ') for item in item_list]
-        entry_list = [entry for entry in item_list if entry.startswith(YT_PREFIX)]
+        # entry_list = [entry for entry in item_list if entry.startswith(YT_PREFIX)]
+        entry_list = [entry for entry in item_list if entry.startswith(VID_PREFIX)]
         return entry_list
     return []

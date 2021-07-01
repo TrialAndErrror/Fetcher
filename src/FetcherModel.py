@@ -5,6 +5,8 @@ import time
 
 import pafy
 
+import tqdm
+
 
 class Fetcher:
     def __init__(self, video_list, output_dir, audio_only):
@@ -13,6 +15,8 @@ class Fetcher:
         self.audio_only = audio_only
         os.makedirs(self.output_dir, exist_ok=True)
         self.threads_list = []
+
+        self.prev_received = 0
 
     def get_videos_using_threads(self):
         """
@@ -83,4 +87,16 @@ class Fetcher:
             video_stream = video_obj.getbestaudio('m4a', False)
         else:
             video_stream = video_obj.getbest('mp4', False)
-        video_stream.download(filepath=self.output_dir)
+            """
+            video_stream.download(filepath=self.output_dir)
+            """
+            with tqdm.tqdm(desc=f"{video_obj.title}", total=video_stream.get_filesize(), unit_scale=True, unit='B', initial=0, maxinterval=100) as pbar:
+                video_stream.download(quiet=True, filepath=self.output_dir, callback=lambda _, received, *args: self.update(pbar, received))
+
+
+    def update(self, pbar, current_received):
+        diff = current_received - self.prev_received
+        pbar.update(diff)
+        self.prev_received = current_received
+
+

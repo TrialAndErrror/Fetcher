@@ -63,6 +63,8 @@ class FetcherWindow(QWidget):
         self.ui.radioButton_sheet.clicked.connect(self.enable_boxes)
         self.ui.radioButton_fetch.clicked.connect(self.enable_boxes)
 
+        self.ui.lineEdit_url.textChanged.connect(lambda: self.ui.radioButton_url.setChecked(True))
+
     def run_fetcher(self):
         self.set_all_disabled(True)
         output_dir = ''
