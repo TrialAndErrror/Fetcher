@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 
 from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
@@ -76,6 +77,7 @@ class FetcherWindow(QWidget):
     def run_fetcher(self):
         self.set_all_disabled(True)
         output_dir = 'Downloads'
+        file = None
 
         if self.ui.radioButton_fetch.isChecked():
             """
@@ -84,12 +86,7 @@ class FetcherWindow(QWidget):
             Get list of filenames from current working directory,
             then process each file found.
             """
-            files_found, video_files = find_files()
-            if files_found:
-                for file in video_files:
-                    audio = bool(file.startswith('[AUDIO]') or self.ui.checkBox_audio.isChecked())
-                    self.progress_window = process_one_sheet(file, audio)
-                    output_dir = self.progress_window.output_dir
+            self.fetch_all()
 
         elif self.ui.radioButton_url.isChecked():
             """
@@ -117,12 +114,51 @@ class FetcherWindow(QWidget):
         Set output directory based on sheet name, or leave as 'Downloads' if just one url.
         Make the directory if it does not exist.
         """
-        self.output_dir = f'{os.getcwd()}/{output_dir}'
-        os.makedirs(self.output_dir, exist_ok=True)
+        if file:
+            self.output_dir = f'{os.getcwd()}/{output_dir}'
+            os.makedirs(self.output_dir, exist_ok=True)
+            shutil.move(file, self.output_dir)
+
+            """
+            Connect the ProgressDisplay.done signal to the finish_fetch function below
+            """
+            self.progress_window.done.connect(self.finish_fetch)
+
+    def fetch_all(self):
+        file = None
+        output_dir = 'Downloads'
+
+        files_found, self.video_files = find_files()
+        if files_found:
+            file = self.video_files.pop(0)
+            audio = bool(file.startswith('[AUDIO]') or self.ui.checkBox_audio.isChecked())
+            self.progress_window, output_dir = process_one_sheet(file, audio)
+
+        if file:
+            self.output_dir = f'{os.getcwd()}/{output_dir}'
+            os.makedirs(self.output_dir, exist_ok=True)
+            shutil.move(file, self.output_dir)
+
+            """
+            Connect the ProgressDisplay.done signal to the finish_fetch function below
+            """
+            self.progress_window.done.connect(self.finish_fetch)
+
+    def close_windows(self):
         """
-        Connect the ProgressDisplay.done signal to the finish_fetch function below
+        Close ProgressDisplay, and open output folder.
         """
-        self.progress_window.done.connect(self.finish_fetch)
+        self.progress_window.close()
+        open_folder(self.output_dir)
+
+        """
+        Make popup window showing count of items downloaded.
+        """
+        message = QMessageBox(QMessageBox.Information, 'Fetcher: Download Complete', f'Download Complete! Fetcher downloaded {count} videos.')
+        message.exec_()
+
+        self.set_all_disabled(False)
+        self.initialize_window()
 
     def finish_fetch(self, count):
         """
@@ -147,8 +183,11 @@ class FetcherWindow(QWidget):
         """
         Re-enable all buttons.
         """
-        self.set_all_disabled(False)
-        self.initialize_window()
+        if len(self.video_files) > 0:
+            self.fetch_all()
+        else:
+            self.set_all_disabled(False)
+            self.initialize_window()
 
 
 def run_gui():

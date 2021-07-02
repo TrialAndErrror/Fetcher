@@ -38,9 +38,9 @@ def find_youtube_links(path):
         logging.warning(f'Error opening {path} as file; error {e}')
     else:
         if path.startswith('[AUDIO]'):
-            return f'{path[7:-4]}/', log_no_videos(video_files)
+            return f'{path[7:-4]}/'.strip(), log_no_videos(video_files)
         else:
-            return f'{path[:-4]}/', log_no_videos(video_files)
+            return f'{path[:-4]}/'.strip(), log_no_videos(video_files)
 
 
 def log_no_videos(video_files):
