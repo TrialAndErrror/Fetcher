@@ -15,6 +15,7 @@ Fetcher uses multithreading with a default maximum workers of 5.
     * python -m venv venv
     * pip install -r requirements.txt
 
+
 ## Usage:
 #### Spreadsheet (Default Setting):
 * Place a CSV file in the root directory of the project (where fetch.py is located).
@@ -32,10 +33,14 @@ Fetcher uses multithreading with a default maximum workers of 5.
 * Note: GUI still under development. If your files are downloading slowly, try cancelling the download and restart the process.
 
 
-#### Single File
+
+#### Fetch All Files
+* run fetch.py from the command line with the -c or --cl flag to run Fetcher from the command line.
+* Note: If you're running into issues with the GUI, or want faster performance, the command line mode may help.
+
+#### Single File (from command line)
 * run main.py from the command line with the -u or --url flag to specify a URL.
     * ex: python main.py -u https://www.youtube.com/watch?v=xQJ-3PbJoYY
-
 
 #### Spreadsheet (from command line)
 * run main.py from the command line with the -f or --file flag to specify a spreadsheet file.
