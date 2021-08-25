@@ -1,7 +1,10 @@
 import os
 import logging
 
-YT_PREFIX = 'https://www.youtube.com/watch'
+
+YT_PREFIX = 'https://www.youtube.com/'
+VID_PREFIX = 'https://www.youtube.com/watch'
+PL_PREFIX = 'https://www.youtube.com/playlist'
 
 
 def find_files():
@@ -14,29 +17,11 @@ def find_files():
     try:
         home_dir = os.listdir()
     except Exception as e:
-        logging.warning('Error reading files in home directory')
-        logging.warning(f'Error was {e}')
+        logging.warning('Error reading files in home directory\nError was {e}')
     else:
         files_list = [file for file in home_dir if file.endswith('.csv')]
         files_found = bool(len(files_list) > 0)
         return files_found, files_list
-
-
-def read_list_path(path):
-    """
-    Reads CSV file located at path param and returns all video files contained within
-
-    :param path: str
-    :return: current_video_files: list[str]
-    """
-
-    try:
-        current_video_files = find_youtube_links(path)
-    except Exception as e:
-        logging.warning(f'Could not read file; Error: {e}')
-    else:
-        log_empty_video_list(current_video_files)
-        return current_video_files
 
 
 def find_youtube_links(path):
@@ -48,36 +33,22 @@ def find_youtube_links(path):
     """
     try:
         with open(path) as file:
-            current_video_files = get_video_links_from_sheet(file, YT_PREFIX)
+            video_files = get_link_entry_list(file)
     except Exception as e:
         logging.warning(f'Error opening {path} as file; error {e}')
     else:
-        return current_video_files
+        if path.startswith('[AUDIO]'):
+            return f'{path[7:-4]}/'.strip(), log_no_videos(video_files)
+        else:
+            return f'{path[:-4]}/'.strip(), log_no_videos(video_files)
 
 
-def log_empty_video_list(current_video_files):
-    """
-    Check to see if video list if empty. If so, log it.
-
-    :param current_video_files: list
-    :return: None
-    """
-    is_files_found = bool(len(current_video_files) > 0)
-    if not is_files_found:
+def log_no_videos(video_files):
+    if len(video_files) < 0:
         logging.warning('No video links found')
-
-
-def get_video_links_from_sheet(file, youtube_prefix):
-    """
-    Get list of entries to check against youtube_prefix parameter.
-
-    :param file: file
-    :param youtube_prefix: str
-    :return: current_video_files: list
-    """
-    entry_list = get_link_entry_list(file)
-    current_video_files = [item for item in entry_list if item.startswith(youtube_prefix)]
-    return current_video_files
+        return []
+    else:
+        return video_files
 
 
 def get_link_entry_list(file):
@@ -88,9 +59,11 @@ def get_link_entry_list(file):
     """
     try:
         item_list = file.read().replace('\n', ',').split(',')
-        item_list = [item.strip(' " " ') for item in item_list]
     except Exception as e:
         logging.warning(f'Error reading file; error {e}')
     else:
-        entry_list = [entry for entry in item_list if len(entry) > len(YT_PREFIX)]
+        item_list = [item.strip(' " " ') for item in item_list]
+        # entry_list = [entry for entry in item_list if entry.startswith(YT_PREFIX)]
+        entry_list = [entry for entry in item_list if entry.startswith(VID_PREFIX)]
         return entry_list
+    return []
