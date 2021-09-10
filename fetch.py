@@ -12,15 +12,13 @@ def fetch_with_timer():
     :return: None
     """
     args = parse_args()
-    print(args)
-
     """
     Fetcher operates in four different ways. You can select a mode by including the flags and required parameters.
     
-    Option 1: Graphical User Interface mode
+    Option 1: Command Line Fetch (Download All Spreadsheets in Root Directory)
     Option 2: Download Single URL
     Option 3: Download Single Spreadsheet
-    Option 4: Fetch (Download All Spreadsheets in Root Directory)
+    Option 4: Graphical User Interface mode
     
     Note: Option 1 (GUI) includes radio buttons for selecting options 2-4.
     """
@@ -28,13 +26,9 @@ def fetch_with_timer():
     if args.get("cl", False):
         """
         Option 1: Command Line Fetch (Download All Spreadsheets in Root Directory)
-
-        Option 1: Graphical User Interface mode
-        Flags: -g, --gui
-        Example: python fetch.py -g
         """
-        num_sheets, num_videos = run_fetch(audio=args.get("audio", False))
-        report_success_or_failure(num_sheets, num_videos)
+        num_videos = run_fetch(args)
+        report_success_or_failure(num_videos)
 
         """
         note: "audio" parameter indicates to only download audio.
@@ -47,7 +41,7 @@ def fetch_with_timer():
         Flags: -u, --url
         Example: python fetch.py -u 'https://www.youtube.com/watch?v=6W7HDm9Ja2Q'
         """
-        run_single_url(args)
+        run_single_url(args.get('url'), args.get('audio', False))
         print(f'\nSuccess! Downloaded {args["url"]}.')
 
     elif args.get("file", False):
@@ -56,12 +50,12 @@ def fetch_with_timer():
         Flags: -f, --file
         Example: python fetch.py -f 'videos.csv'
         """
-        num_sheets, num_videos = run_single_sheet(args)
-        report_success_or_failure(num_sheets, num_videos)
+        num_videos = run_single_sheet(args.get('file'), args.get('audio'))
+        report_success_or_failure(num_videos)
 
     else:
         """
-        Option 4: Fetch (Download All Spreadsheets in Root Directory)
+        Option 4: GUI Mode 
         Flags: None
         Example: python fetch.py
         """
@@ -75,7 +69,6 @@ if __name__ == '__main__':
     Use 'python3 main.py' to run Fetcher from the command line.
     
     If you want to import Fetcher into your project,
-    you can import src.fetch.fetch directly to get the main
-    functionality. Other modules can be imported as necessary.
+    you can import the individual functions from src.commands.py
     """
     fetch_with_timer()

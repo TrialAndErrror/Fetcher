@@ -1,67 +1,48 @@
-import concurrent.futures
-import logging
-import time
+import os
+from threading import Thread
 
-from src.video_actions import make_pafy_object, get_pafy_stream
+from src.video_actions import make_pafy_object
 
 
-class Fetcher:
-    def __init__(self, video_list, output_dir, audio_only):
-        self.video_list = video_list
+class MultiFetcher:
+    def __init__(self, urls, audio_only, output_dir):
+        self.urls: list = urls
+        self.fetcher_list = list()
         self.output_dir = output_dir
         self.audio_only = audio_only
-        self.threads_list = []
 
-        self.verbose = True
+        os.makedirs(self.output_dir, exist_ok=True)
 
-    def get_videos_using_threads(self):
-        """
-        Command-line based threading for video downloads.
+    def fetch(self):
+        for url in self.urls:
+            self.fetcher_list.append(
+                Thread(group=None,
+                       target=download_file,
+                       name=None,
+                       args=(url, self.output_dir, self.audio_only),
+                       kwargs=None,
+                       daemon=None
+                       )
+            )
+        obj: Thread
 
-        Create up to 5 threads at a time to get all videos. Number can be modified in max_workers parameter.
+        for obj in self.fetcher_list:
+            obj.start()
 
-        :return: None
-        """
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        for obj in self.fetcher_list:
+            obj.join()
 
-            for video in self.video_list:
-                self.make_and_append_thread(executor, video)
+        return len(os.listdir(self.output_dir))
 
-            for thread in concurrent.futures.as_completed(self.threads_list):
-                logging.debug(thread.result())
 
-    def make_and_append_thread(self, executor, video):
-        """
-        Make thread, and add to list if successful
+def download_file(url, output_dir, audio_only):
+    """
+    Function that runs on the thread; download item parameter to output directory.
 
-        :param executor: concurrent.futures.ThreadPoolExecutor()
-        :param video: str
-        :return:
-        """
-        try:
-            thread = executor.submit(self.download_file, video)
-        except Exception as e:
-            logging.warning(f'Error making thread for {video};\n\n error code {e}')
-        else:
-            self.threads_list.append(thread)
-            time.sleep(.3)
-
-    def download_file(self, url):
-        """
-        Function that runs on the thread; download item parameter to output directory.
-
-        :param url: str
-        :return: None
-        """
-        video_obj = make_pafy_object(url)
-
-        if self.verbose:
-            print(f'Downloading {video_obj.title}')
-
-        if video_obj:
-            video_stream = get_pafy_stream(video_obj, audio=self.audio_only, verbose=self.verbose)
-            if video_stream:
-                video_stream.download(filepath=self.output_dir, quiet=True)
-
-            if self.verbose:
-                print(f'Finished downloading {video_obj.title}\n')
+    :param audio_only: bool
+    :param output_dir: str
+    :param url: str
+    :return: None
+    """
+    video_stream = make_pafy_object(url, audio_only)
+    video_stream.download(filepath=output_dir, quiet=True)

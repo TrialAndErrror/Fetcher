@@ -57,7 +57,7 @@ def start_logging(debug_mode=False):
         logging.basicConfig(filename='info.log', level=logging.INFO, format=log_format)
 
 
-def report_success_or_failure(num_sheets, num_videos):
+def report_success_or_failure(num_videos):
     """
     Provide command-line feedback to success or failure of fetch process.
 
@@ -65,35 +65,7 @@ def report_success_or_failure(num_sheets, num_videos):
     :param num_videos: int
     :return:
     """
-    if num_sheets > 0 and num_videos > 0:
-        print(f'\nSuccess! {num_sheets} sheets processed, downloading {num_videos} videos.')
+    if num_videos > 0:
+        print(f'\nSuccess! Downloaded {num_videos} videos.')
     else:
-        print_error_message(num_sheets, num_videos)
-
-
-def print_error_message(num_sheets, num_videos):
-    """
-    Prints default error message and includes specific instructions on how to remedy.
-    Used in the command-line version of Fetcher; gui-specific errors are handled in specific windows.
-
-    :param num_sheets: int
-    :param num_videos: int
-    :return: None
-    """
-    print(f'\nUh-oh, something went wrong!')
-
-    if num_sheets == 0:
-        """
-        No sheets found
-        """
-        print('\nNo sheets detected. Make sure you put valid csv files in the root directory.')
-        if num_videos > 0:
-            print(f'\nWeird, I still downloaded {num_videos} videos...')
-
-    elif num_videos == 0:
-        """
-        No videos found
-        """
         print('\nNo videos detected. Make sure your csv files have valid youtube links in them.')
-        if num_sheets > 0:
-            print(f'\nI did see {num_sheets} sheets in the directory, but couldn\'t find any video links')

@@ -17,7 +17,7 @@ def find_files():
     try:
         home_dir = os.listdir()
     except Exception as e:
-        logging.warning('Error reading files in home directory\nError was {e}')
+        logging.warning(f'Error reading files in home directory\nError was {e}')
     else:
         files_list = [file for file in home_dir if file.endswith('.csv')]
         files_found = bool(len(files_list) > 0)
@@ -37,10 +37,7 @@ def find_youtube_links(path):
     except Exception as e:
         logging.warning(f'Error opening {path} as file; error {e}')
     else:
-        if path.startswith('[AUDIO]'):
-            return f'{path[7:-4]}/'.strip(), log_no_videos(video_files)
-        else:
-            return f'{path[:-4]}/'.strip(), log_no_videos(video_files)
+        return log_no_videos(video_files)
 
 
 def log_no_videos(video_files):
@@ -64,6 +61,13 @@ def get_link_entry_list(file):
     else:
         item_list = [item.strip(' " " ') for item in item_list]
         # entry_list = [entry for entry in item_list if entry.startswith(YT_PREFIX)]
-        entry_list = [entry for entry in item_list if entry.startswith(VID_PREFIX)]
+        entry_list = [entry.split('&list')[0] for entry in item_list if entry.startswith(VID_PREFIX)]
         return entry_list
     return []
+
+
+def find_links(file):
+    full_path = os.path.join(os.getcwd(), file)
+    urls = find_youtube_links(full_path)
+    output_dir = f'{full_path[:-4]}/'.strip()
+    return output_dir, urls

@@ -1,22 +1,41 @@
 import logging
 import os
 
-from src.file_actions import find_files, find_youtube_links
-from src.FetcherModel import Fetcher
+from src.file_actions import find_files, find_links
+from src.FetcherModel import MultiFetcher, download_file
 
 
-def run_single_sheet(args):
+def run_single_url(url, audio):
+    """
+    Download a single url.
+    Accessible from GUI or using the -u parameter.
+
+    :param audio: bool
+    :param url: str
+    :return: None
+    """
+    output_dir = os.path.join(os.getcwd(), 'Downloads')
+    os.makedirs(output_dir, exist_ok=True)
+    download_file(url, output_dir, audio)
+    print(f'Downloaded {url}')
+
+
+def run_single_sheet(file, audio_only):
     """
     Same as Run Fetch, but providing a list of one sheet as the files parameter.
     Accessible from GUI or using the -f parameter.
 
+    :param audio_only: bool
+    :param file: str
     :param args: dict
     :return: count_sheets: int, count_videos: int
     """
-    return download_list_of_videos([args["file"]], args.get("audio", False))
+    output_dir, urls = find_links(file)
+    fetcher_obj = MultiFetcher(urls, audio_only, output_dir)
+    return fetcher_obj.fetch()
 
 
-def run_fetch(audio=False):
+def run_fetch(args):
     """
     Perform Video Fetch.
 
@@ -24,77 +43,16 @@ def run_fetch(audio=False):
     :return: None
     """
     files_found, files_list = find_files()
-    num_sheets = 0
-    num_videos = 0
     if files_found:
         logging.info(f'Files list: {files_list}')
-        num_sheets, num_videos = download_list_of_videos(files_list, audio)
+        files_count = 0
+        for file_name in files_list:
+            if file_name.startswith('[AUDIO]'):
+                args['audio'] = True
+            print(f'Working on {file_name}')
+            files_count += run_single_sheet(file_name, args.get('audio', False))
+
+        return files_count
     else:
         logging.warning('No files found; please place CSV files in this directory')
-    return num_sheets, num_videos
-
-
-def download_list_of_videos(files_list, audio_only=False):
-    """
-    Download all videos in all files for a given list of files.
-
-    Also accessed by run_single_sheet, with a files_list that only contains one file.
-
-    audio parameter is optional flag to indicate only audio downloads.
-    :param files_list: list(str)
-    :param audio_only: bool
-    :return: count_sheets: int, count_videos: int
-    """
-    count_sheets = len(files_list)
-    count_videos = 0
-    file: str
-
-    for file in files_list:
-        """
-        Set audio parameter if it's an audio only sheet
-        """
-        audio = False
-
-        """
-        Describe type of sheet to console and log.
-        """
-        if audio_only or file.startswith('[AUDIO]'):
-            message = f'Working on Audio Spreadsheet {file[7:]}'
-            audio = True
-        else:
-            message = f'\nWorking on {file}'
-        print(message)
-        logging.info(message)
-
-        """
-        Setup output directory, and add count of videos for the final report
-        """
-        output_dir_name, current_video_files = find_youtube_links(file)
-        os.makedirs(output_dir_name, exist_ok=True)
-        count_videos += len(current_video_files)
-        """
-        Download all videos
-        """
-        fetcher_obj = Fetcher(current_video_files, output_dir_name, audio)
-        fetcher_obj.get_videos_using_threads()
-
-    """
-    Returning counts for the final report
-    """
-    return count_sheets, count_videos
-
-
-def run_single_url(args):
-    """
-    Download a single url.
-    Accessible from GUI or using the -u parameter.
-
-    :param args: dict
-    :return: num_sheets: int, num_videos: int
-    """
-    fetcher_obj = Fetcher([args["url"]], 'Downloads', args.get("audio", False))
-    fetcher_obj.get_videos_using_threads()
-
-    num_sheets = 0
-    num_videos = 1
-    return num_sheets, num_videos
+        return 0, 0
