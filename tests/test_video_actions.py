@@ -1,9 +1,6 @@
-import os
 import unittest
-import time
-from src.video_actions import create_video_object, download_video
-from src.FetcherModel import pafy_download_video
-from pathlib import Path
+
+from src.video_actions import make_pafy_object
 
 TEST_URLS = [
     'https://youtu.be/papGtuihOfI',
@@ -21,42 +18,27 @@ EXPECTED_NAMES = [
 
 
 class TestVideoActions(unittest.TestCase):
-    # @classmethod
-    # def setUp(self) -> None:
-    #     self.obj_list = [create_video_object(TEST_URLS[num]) for num in range(5)]
-    #
-    # @classmethod
-    # def tearDown(self) -> None:
-
-    def test_download_video(self):
+    def test_make_pafy_object_video(self):
         for num in range(0, 5):
-            path = os.path.join(os.getcwd(), 'tests')
-            print(f'Starting download of video {num + 1}')
-            pafy_download_video(TEST_URLS[num], path, audio_only=False)
-            print(f'Finished download of video {num + 1}')
-            file_exists = os.path.exists(path)
-            self.assertTrue(file_exists)
-            if file_exists:
-                for file in os.listdir(path):
-                    os.remove(os.path.join(path, file))
-            print(f'Removed video {num + 1}')
+            url = TEST_URLS[num]
+            name = EXPECTED_NAMES[num]
 
-            time.sleep(1)
+            video_stream = make_pafy_object(url, False)
 
-    def test_download_audio_only(self):
+            self.assertTrue(video_stream.title == name)
+            self.assertTrue(video_stream.mediatype == 'normal')
+            self.assertTrue(video_stream.extension == 'mp4')
+
+    def test_make_pafy_object_audio(self):
         for num in range(0, 5):
-            path = str(Path(os.getcwd(), 'tests'))
-            print(f'Starting download of video {num + 1}')
-            pafy_download_video(TEST_URLS[num], path, audio_only=True)
-            print(f'Finished download of video {num + 1}')
-            file_exists = os.path.exists(path)
-            self.assertTrue(file_exists)
-            if file_exists:
-                for file in os.listdir(path):
-                    os.remove(os.path.join(path, file))
-            print(f'Removed video {num + 1}')
+            url = TEST_URLS[num]
+            name = EXPECTED_NAMES[num]
 
-            time.sleep(1)
+            video_stream = make_pafy_object(url, True)
+
+            self.assertTrue(video_stream.title == name)
+            self.assertTrue(video_stream.mediatype == 'audio')
+            self.assertTrue(video_stream.extension == 'm4a')
 
 
 if __name__ == "__main__":
