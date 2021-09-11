@@ -2,7 +2,6 @@ import os
 import logging
 
 
-YT_PREFIX = 'https://www.youtube.com/'
 VID_PREFIX = 'https://www.youtube.com/watch'
 PL_PREFIX = 'https://www.youtube.com/playlist'
 
@@ -37,14 +36,8 @@ def find_youtube_links(path):
     except Exception as e:
         logging.warning(f'Error opening {path} as file; error {e}')
     else:
-        return log_no_videos(video_files)
-
-
-def log_no_videos(video_files):
-    if len(video_files) < 0:
-        logging.warning('No video links found')
-        return []
-    else:
+        if len(video_files) == 0:
+            logging.warning('No video links found')
         return video_files
 
 
@@ -60,7 +53,6 @@ def get_link_entry_list(file):
         logging.warning(f'Error reading file; error {e}')
     else:
         item_list = [item.strip(' " " ') for item in item_list]
-        # entry_list = [entry for entry in item_list if entry.startswith(YT_PREFIX)]
         entry_list = [entry.split('&list')[0] for entry in item_list if entry.startswith(VID_PREFIX)]
         return entry_list
     return []
