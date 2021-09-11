@@ -1,3 +1,12 @@
 /venv/
 Videos.csv
 /Videos/
+**.m4a
+**.mp4
+**.csv
+**.log
+**.idea
+**.part
+**.webm
+**.txt
+**.mp3
