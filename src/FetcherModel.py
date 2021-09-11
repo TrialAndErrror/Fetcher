@@ -2,6 +2,7 @@ import os
 from threading import Thread
 
 from src.video_actions import make_pafy_object
+from src.tools.debug_tools import clear_youtube_cache
 
 
 class MultiFetcher:
@@ -44,5 +45,6 @@ def download_file(url, output_dir, audio_only):
     :param url: str
     :return: None
     """
+    clear_youtube_cache()
     video_stream = make_pafy_object(url, audio_only)
     video_stream.download(filepath=output_dir, quiet=True)

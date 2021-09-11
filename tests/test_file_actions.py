@@ -1,29 +1,13 @@
 import os
 import unittest
 from tests import TEST_URLS
-import csv
+from tests.utils import SingleCsvBasedTest
 
 
 from src.file_actions import find_files, find_youtube_links, find_links, get_link_entry_list
 
 
-class TestFileActions(unittest.TestCase):
-    file_path = os.path.join(os.getcwd(), 'test_file.csv')
-
-    def setUp(self) -> None:
-        csv_data = [
-            [TEST_URLS[0], TEST_URLS[1]],
-            [TEST_URLS[2], TEST_URLS[3]],
-            [TEST_URLS[4]]
-        ]
-
-        with open(self.file_path, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(csv_data)
-
-    def tearDown(self) -> None:
-        os.remove(self.file_path)
-
+class TestFileActions(SingleCsvBasedTest):
     def test_find_files(self):
         files_found, files_list = find_files()
 

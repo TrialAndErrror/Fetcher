@@ -1,8 +1,10 @@
 import logging
 import os
+import shutil
 
 from src.file_actions import find_files, find_links
 from src.FetcherModel import MultiFetcher, download_file
+from src.file_actions import open_folder
 
 
 def run_single_url(url, audio):
@@ -19,6 +21,8 @@ def run_single_url(url, audio):
     download_file(url, output_dir, audio)
     print(f'Downloaded {url}')
 
+    open_folder(output_dir)
+
 
 def run_single_sheet(file, audio_only):
     """
@@ -32,10 +36,15 @@ def run_single_sheet(file, audio_only):
     """
     output_dir, urls = find_links(file)
     fetcher_obj = MultiFetcher(urls, audio_only, output_dir)
-    return fetcher_obj.fetch()
+    result = fetcher_obj.fetch()
+
+    shutil.move(file, output_dir)
+    open_folder(output_dir)
+
+    return result
 
 
-def run_fetch(args):
+def run_fetch(audio=False):
     """
     Perform Video Fetch.
 
@@ -48,9 +57,9 @@ def run_fetch(args):
         files_count = 0
         for file_name in files_list:
             if file_name.startswith('[AUDIO]'):
-                args['audio'] = True
+                audio = True
             print(f'Working on {file_name}')
-            files_count += run_single_sheet(file_name, args.get('audio', False))
+            files_count += run_single_sheet(file_name, audio)
 
         return files_count
     else:

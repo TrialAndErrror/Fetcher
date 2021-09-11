@@ -4,9 +4,9 @@ import sys
 
 from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
 
-from src.file_actions import find_files
+from src.file_actions import find_files, open_folder
 from src.gui.WindowForms.fetcher import Ui_Form as WindowUI
-from src.gui.gui_tools import get_file_names, open_folder, process_one_sheet
+from src.gui.gui_tools import get_file_names, process_one_sheet
 from src.gui.models.ProgressWindow import ProgressDisplay
 
 

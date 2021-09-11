@@ -2,6 +2,8 @@ import datetime
 import time
 import logging
 
+import youtube_dl
+
 
 def timer(func):
     """
@@ -69,3 +71,15 @@ def report_success_or_failure(num_videos):
         print(f'\nSuccess! Downloaded {num_videos} videos.')
     else:
         print('\nNo videos detected. Make sure your csv files have valid youtube links in them.')
+
+
+def clear_youtube_cache():
+    """
+    Clearing the cache to avoid the 403: Forbidden error when running fetch tests.
+
+    See https://github.com/mps-youtube/pafy/issues/264
+
+    :return: None
+    """
+    with youtube_dl.YoutubeDL({}) as ydl:
+        ydl.cache.remove()

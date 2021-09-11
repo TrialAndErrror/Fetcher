@@ -1,6 +1,7 @@
 import os
 import logging
-
+import subprocess
+import sys
 
 VID_PREFIX = 'https://www.youtube.com/watch'
 SHORT_PREFIX = 'https://youtu.be/'
@@ -65,3 +66,13 @@ def find_links(file):
     urls = find_youtube_links(full_path)
     output_dir = f'{full_path[:-4]}/'.strip()
     return output_dir, urls
+
+
+def open_folder(output_dir):
+    if sys.platform == 'darwin':
+        subprocess.call(["open", output_dir])
+
+    elif sys.platform == 'win32':
+        os.startfile(output_dir)
+    else:
+        subprocess.call(["xdg-open", output_dir])
