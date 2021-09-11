@@ -3,6 +3,7 @@ import logging
 
 
 VID_PREFIX = 'https://www.youtube.com/watch'
+SHORT_PREFIX = 'https://youtu.be/'
 PL_PREFIX = 'https://www.youtube.com/playlist'
 
 
@@ -51,11 +52,12 @@ def get_link_entry_list(file):
         item_list = file.read().replace('\n', ',').split(',')
     except Exception as e:
         logging.warning(f'Error reading file; error {e}')
+        return []
     else:
         item_list = [item.strip(' " " ') for item in item_list]
         entry_list = [entry.split('&list')[0] for entry in item_list if entry.startswith(VID_PREFIX)]
-        return entry_list
-    return []
+        short_entry_list = [entry for entry in item_list if entry.startswith(SHORT_PREFIX)]
+        return entry_list + short_entry_list
 
 
 def find_links(file):
