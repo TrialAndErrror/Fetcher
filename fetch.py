@@ -1,5 +1,4 @@
 from src.commands import run_single_sheet, run_single_url, run_fetch
-from src.gui.models.FetcherWindow import run_gui
 from src.tools.args import parse_args
 from src.tools.debug_tools import timer, report_success_or_failure
 
@@ -13,14 +12,12 @@ def fetch_with_timer():
     """
     args = parse_args()
     """
-    Fetcher operates in four different ways. You can select a mode by including the flags and required parameters.
+    Fetcher operates in three different ways. You can select a mode by including the flags and required parameters.
     
-    Option 1: Command Line Fetch (Download All Spreadsheets in Root Directory)
-    Option 2: Download Single URL
-    Option 3: Download Single Spreadsheet
-    Option 4: Graphical User Interface mode
-    
-    Note: Option 1 (GUI) includes radio buttons for selecting options 2-4.
+    Option 1: Download Single URL
+    Option 2: Download Single Spreadsheet
+    Option 3: Fetch (Download All Spreadsheets in Root Directory)
+
     """
 
     if args.get("cl", False):
@@ -52,14 +49,6 @@ def fetch_with_timer():
         """
         num_videos = run_single_sheet(args.get('file'), args.get('audio'))
         report_success_or_failure(num_videos)
-
-    else:
-        """
-        Option 4: GUI Mode 
-        Flags: None
-        Example: python fetch.py
-        """
-        run_gui()
 
 
 if __name__ == '__main__':

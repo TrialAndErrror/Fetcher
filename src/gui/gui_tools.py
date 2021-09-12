@@ -6,10 +6,13 @@ from src.gui.models.ProgressWindow import ProgressDisplay
 
 def get_file_names():
     file_names = os.listdir(os.getcwd())
-    return [file for file in file_names
-            if file.endswith('.xls')
-            or file.endswith('.csv')
-            or file.endswith('.xlsx')]
+
+    # return [file for file in file_names
+    #         if file.endswith('.xls')
+    #         or file.endswith('.csv')
+    #         or file.endswith('.xlsx')]
+
+    return [file for file in file_names if file.endswith('.csv')]
 
 
 def clean_video_urls(video_files):

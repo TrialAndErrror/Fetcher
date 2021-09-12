@@ -1,5 +1,5 @@
-import pafy
 from PyQt5.QtCore import QObject, pyqtSignal
+from src.video_actions import make_pafy_object
 
 
 class Worker(QObject):
@@ -24,7 +24,6 @@ class Worker(QObject):
 
     def run(self):
         self.pafy_download_video()
-        print(f"Finished downloading on thread {self.id}")
         self.reset_progress_bar()
 
     def reset_progress_bar(self):
@@ -38,24 +37,8 @@ class Worker(QObject):
 
         :return: None
         """
-        video = pafy.new(self.url)
+        video = make_pafy_object(self.url, self.audio)
+
         self.name.emit(video.title, self.id)
-        print(f'Starting on thread {self.id}')
 
-        if self.audio:
-            try:
-                video_stream = video.getbestaudio('m4a', False)
-            except AttributeError as e:
-                print('Does this video exist?')
-                print(e)
-            else:
-                video_stream.download(self.output_dir, callback=self.callback)
-
-        else:
-            try:
-                video_stream = video.getbest('mp4', False)
-            except AttributeError as e:
-                print('Does this video exist?')
-                print(e)
-            else:
-                video_stream.download(self.output_dir, callback=self.callback)
+        video.download(self.output_dir, callback=self.callback)
