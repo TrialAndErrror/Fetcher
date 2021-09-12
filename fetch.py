@@ -1,6 +1,6 @@
 from src.commands import run_single_sheet, run_single_url, run_fetch
 from src.tools.args import parse_args
-from src.tools.debug_tools import timer, report_success_or_failure
+from src.tools.debug_tools import timer, report_success_or_failure, clear_youtube_cache
 
 
 @timer
@@ -10,6 +10,7 @@ def fetch_with_timer():
 
     :return: None
     """
+    clear_youtube_cache()
     args = parse_args()
     """
     Fetcher operates in three different ways. You can select a mode by including the flags and required parameters.
@@ -19,22 +20,9 @@ def fetch_with_timer():
     Option 3: Fetch (Download All Spreadsheets in Root Directory)
 
     """
-
-    if args.get("cl", False):
+    if args.get("url", False):
         """
-        Option 1: Command Line Fetch (Download All Spreadsheets in Root Directory)
-        """
-        num_videos = run_fetch(args)
-        report_success_or_failure(num_videos)
-
-        """
-        note: "audio" parameter indicates to only download audio.
-        On command line, this is accessible from -a or --audio
-        """
-
-    elif args.get("url", False):
-        """
-        Option 2: Download Single URL
+        Option 1: Download Single URL
         Flags: -u, --url
         Example: python fetch.py -u 'https://www.youtube.com/watch?v=6W7HDm9Ja2Q'
         """
@@ -43,12 +31,23 @@ def fetch_with_timer():
 
     elif args.get("file", False):
         """
-        Option 3: Download Single Spreadsheet
+        Option 2: Download Single Spreadsheet
         Flags: -f, --file
         Example: python fetch.py -f 'videos.csv'
         """
         num_videos = run_single_sheet(args.get('file'), args.get('audio'))
         report_success_or_failure(num_videos)
+    else:
+        """
+        Option 3: Command Line Fetch (Download All Spreadsheets in Root Directory)
+        """
+        num_videos = run_fetch(args.get('audio', False))
+        report_success_or_failure(num_videos)
+
+        """
+        note: "audio" parameter indicates to only download audio.
+        On command line, this is accessible from -a or --audio
+        """
 
 
 if __name__ == '__main__':
