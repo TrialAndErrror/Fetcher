@@ -1,8 +1,8 @@
 import logging
 import os
 
-from src.file_actions import find_files, find_links
 from src.FetcherModel import MultiFetcher, download_file
+from src.file_actions import find_files, find_links
 
 
 def run_single_url(url, audio):
@@ -47,11 +47,9 @@ def run_fetch(args):
         logging.info(f'Files list: {files_list}')
         files_count = 0
         for file_name in files_list:
-            if file_name.startswith('[AUDIO]'):
-                args['audio'] = True
+            audio_only = file_name.startswith('[AUDIO]') or args.get('audio', False)
             print(f'Working on {file_name}')
-            files_count += run_single_sheet(file_name, args.get('audio', False))
-
+            files_count += run_single_sheet(file_name, audio_only)
         return files_count
     else:
         logging.warning('No files found; please place CSV files in this directory')
