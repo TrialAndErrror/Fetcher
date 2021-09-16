@@ -72,16 +72,9 @@ class ProgressDisplay(QWidget):
         thread.start()
         return thread, worker
 
-    # @pyqtSlot(int, int)
-    # def process_size_signal(self):
-    #     id = self.sender().id
-
     @pyqtSlot(int, int)
     def process_progress_signal(self, value, id):
         self.bars[id].setValue(value)
-
-    # def process_eta_signal(self):
-    #     id = self.sender().id
 
     @pyqtSlot(str, int)
     def process_name_signal(self, name, id):
@@ -94,10 +87,18 @@ class ProgressDisplay(QWidget):
             self.threads[id] = self.add_thread(id, self.urls.pop(0))
         else:
             self.threads.pop(id)
+
         if len(self.threads) == 0:
             self.done.emit(self.total)
 
     def cancel_all(self):
-        self.done.emit(self.total)
         self.ui.pushButton_cancel.setText('Cancelling downloads...')
         self.ui.pushButton_cancel.setEnabled(False)
+
+        for thread in self.threads:
+            thread.quit()
+
+        self.done.emit(self.total)
+
+
+

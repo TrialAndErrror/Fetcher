@@ -1,6 +1,4 @@
 import os
-import subprocess
-import sys
 
 from src.file_actions import find_youtube_links
 from src.gui.models.ProgressWindow import ProgressDisplay
@@ -8,20 +6,13 @@ from src.gui.models.ProgressWindow import ProgressDisplay
 
 def get_file_names():
     file_names = os.listdir(os.getcwd())
-    return [file for file in file_names
-            if file.endswith('.xls')
-            or file.endswith('.csv')
-            or file.endswith('.xlsx')]
 
+    # return [file for file in file_names
+    #         if file.endswith('.xls')
+    #         or file.endswith('.csv')
+    #         or file.endswith('.xlsx')]
 
-def open_folder(output_dir):
-    if sys.platform == 'darwin':
-        subprocess.call(["open", output_dir])
-
-    elif sys.platform == 'win32':
-        os.startfile(output_dir)
-    else:
-        subprocess.call(["xdg-open", output_dir])
+    return [file for file in file_names if file.endswith('.csv')]
 
 
 def clean_video_urls(video_files):

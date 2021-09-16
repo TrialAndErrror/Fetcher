@@ -1,12 +1,11 @@
 import os
 import shutil
-import sys
 
-from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
+from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from src.file_actions import find_files
+from src.file_actions import find_files, open_folder
 from src.gui.WindowForms.fetcher import Ui_Form as WindowUI
-from src.gui.gui_tools import get_file_names, open_folder, process_one_sheet
+from src.gui.gui_tools import get_file_names, process_one_sheet
 from src.gui.models.ProgressWindow import ProgressDisplay
 
 
@@ -59,7 +58,6 @@ class FetcherWindow(QWidget):
 
     def connect_buttons(self):
         self.ui.pushButton_fetch.clicked.connect(self.run_fetcher)
-        # self.ui.pushButton_fetch.clicked.connect(self.new_run_fetcher)
 
         self.ui.radioButton_url.clicked.connect(self.enable_boxes)
         self.ui.radioButton_sheet.clicked.connect(self.enable_boxes)
@@ -144,22 +142,6 @@ class FetcherWindow(QWidget):
             """
             self.progress_window.done.connect(self.finish_fetch)
 
-    def close_windows(self):
-        """
-        Close ProgressDisplay, and open output folder.
-        """
-        self.progress_window.close()
-        open_folder(self.output_dir)
-
-        """
-        Make popup window showing count of items downloaded.
-        """
-        message = QMessageBox(QMessageBox.Information, 'Fetcher: Download Complete', f'Download Complete! Fetcher downloaded {count} videos.')
-        message.exec_()
-
-        self.set_all_disabled(False)
-        self.initialize_window()
-
     def finish_fetch(self, count):
         """
         Steps to run after ProgressDisplay is finished.
@@ -190,8 +172,3 @@ class FetcherWindow(QWidget):
             self.initialize_window()
 
 
-def run_gui():
-    app = QApplication(sys.argv)
-    screen = FetcherWindow()
-    screen.show()
-    sys.exit(app.exec_())

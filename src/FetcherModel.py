@@ -45,4 +45,4 @@ def download_file(url, output_dir, audio_only):
     :return: None
     """
     video_stream = make_pafy_object(url, audio_only)
-    video_stream.download(filepath=output_dir, quiet=True)
+    video_stream.download(filepath=output_dir, quiet=False)
