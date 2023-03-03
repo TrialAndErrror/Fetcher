@@ -1,35 +1,30 @@
 import os
 from threading import Thread
+from typing import List
 
-from src.video_actions import make_pafy_object
+from src.pafy_fetcher.video_actions import VideoPafyObject, AudioPafyObject
 
 
 class MultiFetcher:
+    fetcher_list: List[Thread]
+
     def __init__(self, urls, audio_only, output_dir):
         self.urls: list = urls
-        self.fetcher_list = list()
         self.output_dir = output_dir
         self.audio_only = audio_only
 
         os.makedirs(self.output_dir, exist_ok=True)
 
     def fetch(self):
-        for url in self.urls:
-            self.fetcher_list.append(
-                Thread(group=None,
-                       target=download_file,
-                       name=None,
-                       args=(url, self.output_dir, self.audio_only),
-                       kwargs=None,
-                       daemon=None
-                       )
-            )
-        obj: Thread
+        self.fetcher_list = [
+            Thread(
+                target=download_file,
+                args=(url, self.output_dir, self.audio_only),
+            ) for url in self.urls
+        ]
 
         for obj in self.fetcher_list:
             obj.start()
-
-        for obj in self.fetcher_list:
             obj.join()
 
         return len(os.listdir(self.output_dir))
@@ -44,5 +39,10 @@ def download_file(url, output_dir, audio_only):
     :param url: str
     :return: None
     """
-    video_stream = make_pafy_object(url, audio_only)
+
+    model = AudioPafyObject if audio_only else VideoPafyObject
+    obj = model(url)
+
+    video_stream = obj.get_stream()
+
     video_stream.download(filepath=output_dir, quiet=False)

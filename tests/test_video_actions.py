@@ -1,6 +1,6 @@
 import unittest
 
-from src.video_actions import make_pafy_object
+from src.pafy_fetcher.video_actions import make_pafy_object
 from tests import TEST_URLS, EXPECTED_NAMES
 
 

@@ -1,4 +1,4 @@
-PyQt5>=5.15.4
-pafy>=0.5.5
-youtube-dl>=2021.6.6
-pytube>=10.8.5
+PyQt5
+pafy
+youtube-dl
+pytube

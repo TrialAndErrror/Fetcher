@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSignal
-from src.video_actions import make_pafy_object
+from src.pafy_fetcher.video_actions import make_pafy_object
 
 
 class Worker(QObject):

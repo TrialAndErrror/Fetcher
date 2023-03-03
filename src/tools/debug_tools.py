@@ -35,10 +35,11 @@ def timer(func):
         :return: float, str
         """
         duration = stop - start
-        unit = 'seconds'
         if duration > 60:
-            duration = duration / 60
+            duration /= 60
             unit = 'minutes'
+        else:
+            unit = 'seconds'
         return duration, unit
 
     return wrapper
@@ -63,7 +64,6 @@ def report_success_or_failure(num_videos):
     """
     Provide command-line feedback to success or failure of fetch process.
 
-    :param num_sheets: int
     :param num_videos: int
     :return:
     """
